@@ -7,8 +7,10 @@ Aplicação para busca de hoteis implementada ao longo do curso [The Web Develop
 ## 🔨 Tecnologias
 
 ### Front-end
+
 - [EJS](https://ejs.co/)
 
 ### Back-end
+
 - [Node.js](https://nodejs.org/en/)
 - [Express](https://expressjs.com/)
