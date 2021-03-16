@@ -1,28 +1,50 @@
 const express = require('express');
-const path = require('path');
 const mongoose = require('mongoose');
-
-mongoose.connect('mongodb://localhost:27017/qual-hotel', {
-  useNewUrlParser: true,
-  userCreateIndex: true,
-  useUnifiedTopology: true,
+const router = require('./routes');
+const path = require('path');
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
 });
 
-const db = mongoose.connection;
-db.on('error', console.log.bind(console, 'Connection error'));
-db.once('open', () => {
-  console.log('Database connected');
-});
+class AppController {
+  constructor() {
+    this.app = express();
 
-const app = express();
+    this.settings();
+    this.database();
+    this.middleware();
+    this.routes();
+  }
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+  settings() {
+    this.app.set('view engine', 'ejs');
+    this.app.set('views', path.join(__dirname, 'views'));
+  }
 
-app.get('/', (request, response) => {
-  response.render('home');
-});
+  database() {
+    mongoose.connect(
+      `mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`,
+      {
+        useNewUrlParser: true,
+        userCreateIndex: true,
+        useUnifiedTopology: true,
+      }
+    );
 
-app.listen(3000, () => {
-  console.log('Listening on http://localhost:3000');
-});
+    const db = mongoose.connection;
+    db.on('error', console.log.bind(console, 'Connection error'));
+    db.once('open', () => {
+      console.log('Database connected');
+    });
+  }
+
+  middleware() {
+    // insert middleware here
+  }
+
+  routes() {
+    this.app.use(router);
+  }
+}
+
+module.exports = new AppController().app;

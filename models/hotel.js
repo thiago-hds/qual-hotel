@@ -1,10 +1,11 @@
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const hotelSchema = new Schema({
-  title: String,
+const HotelSchema = new Schema({
+  name: String,
   price: String,
   description: String,
   location: String,
 });
 
-module.exports = model('Hotel', hotelSchema);
+module.exports = mongoose.model('Hotel', HotelSchema);
