@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes');
+const router = require('../routes');
 const path = require('path');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
@@ -8,7 +8,7 @@ require('dotenv').config({
 
 class AppController {
   constructor() {
-    this.app = express();
+    this.appInstance = express();
 
     this.settings();
     this.database();
@@ -17,8 +17,8 @@ class AppController {
   }
 
   settings() {
-    this.app.set('view engine', 'ejs');
-    this.app.set('views', path.join(__dirname, 'views'));
+    this.appInstance.set('view engine', 'ejs');
+    this.appInstance.set('views', path.join(__dirname, 'views'));
   }
 
   database() {
@@ -26,16 +26,19 @@ class AppController {
       `mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`,
       {
         useNewUrlParser: true,
-        userCreateIndex: true,
         useUnifiedTopology: true,
       }
     );
 
-    const db = mongoose.connection;
-    db.on('error', console.log.bind(console, 'Connection error'));
-    db.once('open', () => {
+    this.db = mongoose.connection;
+    this.db.on('error', console.log.bind(console, 'Connection error'));
+    this.db.once('open', () => {
       console.log('Database connected');
     });
+  }
+
+  closeDatabaseConnection() {
+    this.db.close();
   }
 
   middleware() {
@@ -43,8 +46,8 @@ class AppController {
   }
 
   routes() {
-    this.app.use(router);
+    this.appInstance.use(router);
   }
 }
 
-module.exports = new AppController().app;
+module.exports = new AppController();
