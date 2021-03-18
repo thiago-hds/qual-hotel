@@ -11,6 +11,14 @@
 <body>
     <h1><%= hotel.name %> </h1>
     <h2><%= hotel.location %> </h2>
+    <a href="/hotels">Voltar</a>
+    <a href="/hotels/<%= hotel._id %>/edit">Editar</a>
+    <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
+        <p>
+            <button>Excluir</button>
+        </p>
+    </form>
+
 </body>
 
 </html>

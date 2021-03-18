@@ -7,7 +7,8 @@
     "test": "NODE_ENV=test jest",
     "mongo": "docker run --name mongodb -d -p 27017:27017 mongo",
     "predev": "docker start mongodb",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed": "node src/database/seed"
   },
   "keywords": [],
   "author": "Thiago Santos <s.thiagoh@gmail.com>",
@@ -16,6 +17,7 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "method-override": "^3.0.0",
     "mongoose": "^5.11.18"
   },
   "devDependencies": {

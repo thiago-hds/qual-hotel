@@ -1,11 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 const router = require('../routes');
 const path = require('path');
+
 require('dotenv').config({
   path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
 });
-
 class AppController {
   constructor() {
     this.appInstance = express();
@@ -42,7 +43,8 @@ class AppController {
   }
 
   middleware() {
-    // insert middleware here
+    this.appInstance.use(express.urlencoded({ extended: true }));
+    this.appInstance.use(methodOverride('_method'));
   }
 
   routes() {

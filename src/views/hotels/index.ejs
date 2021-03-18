@@ -10,10 +10,14 @@
 
 <body>
     <h1>Hotéis</h1>
+    <div>
+        <a href="/hotels/new">New Hotel</a>
+    </div>
     <ul>
         <% for(const hotel of hotels){ %>
         <li>
-            <a href="/hotels/show/<%= hotel._id %>"><%= hotel.name %> </a>
+            <a href="/hotels/<%= hotel._id %>"><%= hotel.name %> </a> -
+            <a href='/hotels/<%= hotel._id %>/edit'> Editar</a>
         </li>
         <% } %>
     </ul>
