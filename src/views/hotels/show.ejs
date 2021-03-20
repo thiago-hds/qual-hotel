@@ -1,24 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('layouts/boilerplate') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel</title>
-</head>
-
-<body>
-    <h1><%= hotel.name %> </h1>
-    <h2><%= hotel.location %> </h2>
-    <a href="/hotels">Voltar</a>
-    <a href="/hotels/<%= hotel._id %>/edit">Editar</a>
-    <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
-        <p>
-            <button>Excluir</button>
-        </p>
-    </form>
-
-</body>
-
-</html>
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="card mb-3">
+            <img src="<%= hotel.image %>" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title"><%= hotel.name %></h5>
+                <p class="card-text">
+                    <%= hotel.description %>
+                </p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted"><%= hotel.location %></li>
+                <li class="list-group-item"> R$<%= hotel.price.toFixed(2) %> por noite</li>
+            </ul>
+            <div class="card-body">
+                <a class="btn btn-info" href="/hotels/<%= hotel._id %>/edit">Editar</a>
+                <form class="d-inline" action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const ejsMate = require('ejs-mate');
 const router = require('../routes');
 const path = require('path');
 
@@ -18,6 +19,7 @@ class AppController {
   }
 
   settings() {
+    this.appInstance.engine('ejs', ejsMate);
     this.appInstance.set('view engine', 'ejs');
     this.appInstance.set('views', path.join(__dirname, 'views'));
   }
