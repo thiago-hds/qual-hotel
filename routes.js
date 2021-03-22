@@ -15,6 +15,8 @@ routes.get('/hotels/new', (req, res) => {
 });
 
 routes.post('/hotels', async (req, res) => {
+  console.log('SAVING A NEW HOTEL');
+  console.log(req.body);
   const hotel = new Hotel(req.body.hotel);
   await hotel.save();
   res.redirect(`/hotels/${hotel._id}`);

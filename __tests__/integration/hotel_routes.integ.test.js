@@ -1,9 +1,14 @@
 const request = require('supertest');
-
+const app = require('../../src/app');
 const appController = require('../../src/app');
+const factory = require('../factories');
 const Hotel = require('../../src/models/hotel');
 
 describe('Hotel Routes', () => {
+  // beforeEach(async () => {
+  //   await Hotel.deleteMany();
+  // });
+
   it('should render hotel index page', async () => {
     const res = await request(appController.appInstance).get('/hotels');
 
@@ -12,8 +17,7 @@ describe('Hotel Routes', () => {
   });
 
   it('should render a hotel show page when hotel id is valid', async () => {
-    const hotel = Hotel({ name: 'Grand Hotel Budapest' });
-    await hotel.save();
+    const hotel = await factory.create('Hotel');
 
     const res = await request(appController.appInstance).get(
       `/hotels/${hotel._id}`
@@ -40,11 +44,21 @@ describe('Hotel Routes', () => {
   });
 
   it('should save a new hotel', async () => {
-    const res = await request(appController.appInstance).post('/hotels').send({
-      name: 'NewHotel',
-      location: 'Belo Horizonte - MG',
-    });
-    const newHotelExists = await Hotel.exists({ name: 'NewHotel' });
+    const requestBody = {
+      hotel: {
+        name: 'NewHotel',
+        image: 'http://server.com/image',
+        price: 100.99,
+        description: 'New test hotel',
+        location: 'Belo Horizonte - MG',
+      },
+    };
+
+    const res = await request(appController.appInstance)
+      .post('/hotels')
+      .type('form')
+      .send(requestBody);
+    const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
 
     expect(res.status).toBe(302);
     expect(res.redirect).toBe(true);
@@ -52,8 +66,7 @@ describe('Hotel Routes', () => {
   });
 
   it('should render edit hotel page', async () => {
-    const hotel = Hotel({ name: 'Grand Hotel Budapest' });
-    await hotel.save();
+    const hotel = await factory.create('Hotel');
 
     const res = await request(appController.appInstance).get(
       `/hotels/${hotel._id}/edit`
@@ -72,8 +85,7 @@ describe('Hotel Routes', () => {
   // });
 
   it('should edit a hotel', async () => {
-    const hotel = Hotel({ name: 'Grand Hotel Budapest' });
-    await hotel.save();
+    const hotel = await factory.create('Hotel');
 
     hotel.name = 'New Grand Hotel Budapest';
 
@@ -86,8 +98,7 @@ describe('Hotel Routes', () => {
   });
 
   it('should delete a hotel', async () => {
-    const hotel = Hotel({ name: 'Grand Hotel Budapest' });
-    await hotel.save();
+    const hotel = await factory.create('Hotel');
 
     const res = await request(appController.appInstance).delete(
       `/hotels/${hotel._id}`
