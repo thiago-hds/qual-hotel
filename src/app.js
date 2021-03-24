@@ -4,6 +4,7 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const router = require('../routes');
 const path = require('path');
+const morgan = require('morgan');
 
 require('dotenv').config({
   path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
@@ -16,6 +17,7 @@ class AppController {
     this.database();
     this.middleware();
     this.routes();
+    this.errorHandlers();
   }
 
   settings() {
@@ -47,10 +49,20 @@ class AppController {
   middleware() {
     this.appInstance.use(express.urlencoded({ extended: true }));
     this.appInstance.use(methodOverride('_method'));
+    if (process.env.NODE_ENV !== 'test') {
+      this.appInstance.use(morgan('tiny'));
+    }
   }
 
   routes() {
     this.appInstance.use(router);
+  }
+
+  errorHandlers() {
+    this.appInstance.use((err, req, res, next) => {
+      const { statusCode = 500, message = 'Internal sever error' } = err;
+      res.status(statusCode).send(message);
+    });
   }
 }
 

@@ -22,7 +22,8 @@
     "express": "^4.17.1",
     "factory-girl": "^5.0.4",
     "method-override": "^3.0.0",
-    "mongoose": "^5.11.18"
+    "mongoose": "^5.11.18",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "eslint": "^7.2.0",

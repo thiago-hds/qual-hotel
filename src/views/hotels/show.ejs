@@ -2,24 +2,24 @@
 
 <div class="row">
     <div class="col-6 offset-3">
-        <div class="card mb-3">
+        <main class="card mb-3">
             <img src="<%= hotel.image %>" class="card-img-top" alt="...">
-            <div class="card-body">
+            <section class="card-body">
                 <h5 class="card-title"><%= hotel.name %></h5>
                 <p class="card-text">
                     <%= hotel.description %>
                 </p>
-            </div>
-            <ul class="list-group list-group-flush">
+            </section>
+            <section class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= hotel.location %></li>
                 <li class="list-group-item"> R$<%= hotel.price.toFixed(2) %> por noite</li>
-            </ul>
-            <div class="card-body">
+            </section>
+            <section class="card-body">
                 <a class="btn btn-info" href="/hotels/<%= hotel._id %>/edit">Editar</a>
                 <form class="d-inline" action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Excluir</button>
                 </form>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 </div>

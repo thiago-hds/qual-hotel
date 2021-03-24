@@ -1,13 +1,12 @@
 const request = require('supertest');
-const app = require('../../src/app');
 const appController = require('../../src/app');
 const factory = require('../factories');
 const Hotel = require('../../src/models/hotel');
 
 describe('Hotel Routes', () => {
-  // beforeEach(async () => {
-  //   await Hotel.deleteMany();
-  // });
+  beforeEach(async () => {
+    await Hotel.deleteMany();
+  });
 
   it('should render hotel index page', async () => {
     const res = await request(appController.appInstance).get('/hotels');
@@ -43,7 +42,7 @@ describe('Hotel Routes', () => {
     expect(res.headers['content-type']).toMatch('html');
   });
 
-  it('should save a new hotel', async () => {
+  it('should save a new hotel with valid data', async () => {
     const requestBody = {
       hotel: {
         name: 'NewHotel',
@@ -63,6 +62,27 @@ describe('Hotel Routes', () => {
     expect(res.status).toBe(302);
     expect(res.redirect).toBe(true);
     expect(newHotelExists).toBe(true);
+  });
+
+  it('should not save a new hotel with invalid data', async () => {
+    const requestBody = {
+      hotel: {
+        name: 'NewHotel',
+        image: 'http://server.com/image',
+        price: 'price', // string como preço
+        description: 'New test hotel',
+        location: 'Belo Horizonte - MG',
+      },
+    };
+
+    const res = await request(appController.appInstance)
+      .post('/hotels')
+      .type('form')
+      .send(requestBody);
+    const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
+
+    expect(res.status).toBe(422);
+    expect(newHotelExists).toBe(false);
   });
 
   it('should render edit hotel page', async () => {
