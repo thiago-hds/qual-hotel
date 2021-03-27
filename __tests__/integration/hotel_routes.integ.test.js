@@ -27,14 +27,14 @@ describe('Hotel Routes', () => {
     expect(res.text).toMatch(hotel.name);
   });
 
-  // it('should not render a hotel show page when hotel id is invalid', async () => {
-  //   const hotelId = '1234';
-  //   const res = await request(appController.appInstance).get(
-  //     `/hotels/${hotelId}`
-  //   );
+  it('should not render a hotel show page when hotel id is invalid', async () => {
+    const hotelId = '1234';
+    const res = await request(appController.appInstance).get(
+      `/hotels/${hotelId}`
+    );
 
-  //   expect(res.status).toBe(404);
-  // });
+    expect(res.status).toBe(404);
+  });
 
   it('should render new hotel page', async () => {
     const res = await request(appController.appInstance).get('/hotels/new');
@@ -70,7 +70,7 @@ describe('Hotel Routes', () => {
         name: 'NewHotel',
         image: 'http://server.com/image',
         price: 'price', // string como preço
-        description: 'New test hotel',
+        description: undefined,
         location: 'Belo Horizonte - MG',
       },
     };
@@ -81,7 +81,7 @@ describe('Hotel Routes', () => {
       .send(requestBody);
     const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
 
-    expect(res.status).toBe(422);
+    expect(res.status).toBe(400);
     expect(newHotelExists).toBe(false);
   });
 
@@ -95,26 +95,38 @@ describe('Hotel Routes', () => {
     expect(res.headers['content-type']).toMatch('html');
   });
 
-  // it('should not render a hotel edit page when hotel id is invalid', async () => {
-  //   const hotelId = '1234';
-  //   const res = await request(appController.appInstance).get(
-  //     `/hotels/${hotelId}/edit`
-  //   );
+  it('should not render a hotel edit page when hotel id is invalid', async () => {
+    const hotelId = '1234';
+    const res = await request(appController.appInstance).get(
+      `/hotels/${hotelId}/edit`
+    );
 
-  //   expect(res.status).toBe(404);
-  // });
+    expect(res.status).toBe(404);
+  });
 
-  it('should edit a hotel', async () => {
+  it('should edit a hotel with valid data', async () => {
     const hotel = await factory.create('Hotel');
 
-    hotel.name = 'New Grand Hotel Budapest';
+    const requestBody = {
+      hotel: {
+        name: 'NewHotel',
+        image: 'http://server.com/image',
+        price: 100.99,
+        description: 'New test hotel',
+        location: 'Belo Horizonte - MG',
+      },
+    };
 
     const res = await request(appController.appInstance)
       .put(`/hotels/${hotel._id}`)
-      .send({ hotel });
+      .type('form')
+      .send(requestBody);
+    console.log(res);
 
-    expect(res.status).toBe(302);
+    const hotelExists = await Hotel.exists({ name: requestBody.hotel.name });
+
     expect(res.redirect).toBe(true);
+    expect(hotelExists).toBe(true);
   });
 
   it('should delete a hotel', async () => {

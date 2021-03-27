@@ -2,6 +2,7 @@ const routes = require('express').Router();
 const wrapAsync = require('./src/utils/wrapAsync');
 const Hotel = require('./src/models/hotel');
 const AppError = require('./src/utils/AppError');
+const validateHotel = require('./src/middleware/validateHotel');
 
 routes.get('/', (req, res) => {
   res.render('home');
@@ -21,10 +22,8 @@ routes.get('/hotels/new', (req, res) => {
 
 routes.post(
   '/hotels',
+  validateHotel,
   wrapAsync(async (req, res, next) => {
-    if (!req.body.hotel) {
-      throw new AppError(400, 'Invalid hotel data');
-    }
     const hotel = new Hotel(req.body.hotel);
     await hotel.save();
     res.redirect(`/hotels/${hotel._id}`);
@@ -35,6 +34,9 @@ routes.get(
   '/hotels/:id',
   wrapAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
+    if (!hotel) {
+      throw new AppError(404, ' Hotel not found');
+    }
     res.render('hotels/show', { hotel });
   })
 );
@@ -43,12 +45,16 @@ routes.get(
   '/hotels/:id/edit',
   wrapAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
+    if (!hotel) {
+      throw new AppError(404, ' Hotel not found');
+    }
     res.render('hotels/edit', { hotel });
   })
 );
 
 routes.put(
   '/hotels/:id',
+  validateHotel,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);

@@ -59,9 +59,13 @@ class AppController {
   }
 
   errorHandlers() {
-    this.appInstance.use((err, req, res, next) => {
-      const { statusCode = 500, message = 'Internal sever error' } = err;
-      res.status(statusCode).send(message);
+    this.appInstance.use((error, req, res, next) => {
+      const { statusCode = 500 } = error;
+      if (!error.message) {
+        error.message = 'Internal sever error';
+      }
+      res.status(statusCode).render('error', { error });
+      return next(error);
     });
   }
 }
