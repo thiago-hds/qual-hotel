@@ -1,15 +1,13 @@
-const request = require('supertest');
-const appController = require('../../src/app');
+const supertest = require('supertest');
+const app = require('../../src/app');
 const factory = require('../factories');
 const Hotel = require('../../src/models/hotel');
 
-describe('Hotel Routes', () => {
-  beforeEach(async () => {
-    await Hotel.deleteMany();
-  });
+const request = supertest(app);
 
+describe('Hotel Routes', () => {
   it('should render hotel index page', async () => {
-    const res = await request(appController.appInstance).get('/hotels');
+    const res = await request.get('/hotels');
 
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch('html');
@@ -18,26 +16,22 @@ describe('Hotel Routes', () => {
   it('should render a hotel show page when hotel id is valid', async () => {
     const hotel = await factory.create('Hotel');
 
-    const res = await request(appController.appInstance).get(
-      `/hotels/${hotel._id}`
-    );
+    const res = await request.get(`/hotels/${hotel._id}`);
 
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch('html');
-    expect(res.text).toMatch(hotel.name);
+    expect(res.text).toMatch(new RegExp(hotel.name));
   });
 
   it('should not render a hotel show page when hotel id is invalid', async () => {
     const hotelId = '1234';
-    const res = await request(appController.appInstance).get(
-      `/hotels/${hotelId}`
-    );
+    const res = await request.get(`/hotels/${hotelId}`);
 
     expect(res.status).toBe(404);
   });
 
   it('should render new hotel page', async () => {
-    const res = await request(appController.appInstance).get('/hotels/new');
+    const res = await request.get('/hotels/new');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch('html');
   });
@@ -53,10 +47,7 @@ describe('Hotel Routes', () => {
       },
     };
 
-    const res = await request(appController.appInstance)
-      .post('/hotels')
-      .type('form')
-      .send(requestBody);
+    const res = await request.post('/hotels').type('form').send(requestBody);
     const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
 
     expect(res.status).toBe(302);
@@ -75,10 +66,7 @@ describe('Hotel Routes', () => {
       },
     };
 
-    const res = await request(appController.appInstance)
-      .post('/hotels')
-      .type('form')
-      .send(requestBody);
+    const res = await request.post('/hotels').type('form').send(requestBody);
     const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
 
     expect(res.status).toBe(400);
@@ -88,18 +76,14 @@ describe('Hotel Routes', () => {
   it('should render edit hotel page', async () => {
     const hotel = await factory.create('Hotel');
 
-    const res = await request(appController.appInstance).get(
-      `/hotels/${hotel._id}/edit`
-    );
+    const res = await request.get(`/hotels/${hotel._id}/edit`);
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch('html');
   });
 
   it('should not render a hotel edit page when hotel id is invalid', async () => {
     const hotelId = '1234';
-    const res = await request(appController.appInstance).get(
-      `/hotels/${hotelId}/edit`
-    );
+    const res = await request.get(`/hotels/${hotelId}/edit`);
 
     expect(res.status).toBe(404);
   });
@@ -117,11 +101,10 @@ describe('Hotel Routes', () => {
       },
     };
 
-    const res = await request(appController.appInstance)
+    const res = await request
       .put(`/hotels/${hotel._id}`)
       .type('form')
       .send(requestBody);
-    console.log(res);
 
     const hotelExists = await Hotel.exists({ name: requestBody.hotel.name });
 
@@ -132,18 +115,12 @@ describe('Hotel Routes', () => {
   it('should delete a hotel', async () => {
     const hotel = await factory.create('Hotel');
 
-    const res = await request(appController.appInstance).delete(
-      `/hotels/${hotel._id}`
-    );
+    const res = await request.delete(`/hotels/${hotel._id}`);
 
     const hotelExists = await Hotel.exists({ _id: hotel._id });
 
     expect(res.status).toBe(302);
     expect(res.redirect).toBe(true);
     expect(hotelExists).toBe(false);
-  });
-
-  afterAll(() => {
-    appController.closeDatabaseConnection();
   });
 });

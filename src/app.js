@@ -1,17 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
-const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const router = require('../routes');
 const path = require('path');
 const morgan = require('morgan');
 
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
-});
+const databaseHelper = require('./helpers/database');
+const errorHandlerHelper = require('./helpers/errorHandler');
+
 class AppController {
   constructor() {
-    this.appInstance = express();
+    this.app = express();
 
     this.settings();
     this.database();
@@ -21,53 +22,30 @@ class AppController {
   }
 
   settings() {
-    this.appInstance.engine('ejs', ejsMate);
-    this.appInstance.set('view engine', 'ejs');
-    this.appInstance.set('views', path.join(__dirname, 'views'));
+    this.app.engine('ejs', ejsMate);
+    this.app.set('view engine', 'ejs');
+    this.app.set('views', path.join(__dirname, 'views'));
   }
 
   database() {
-    mongoose.connect(
-      `mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
-
-    this.db = mongoose.connection;
-    this.db.on('error', console.log.bind(console, 'Connection error'));
-    this.db.once('open', () => {
-      console.log('Database connected');
-    });
-  }
-
-  closeDatabaseConnection() {
-    this.db.close();
+    databaseHelper.connect();
   }
 
   middleware() {
-    this.appInstance.use(express.urlencoded({ extended: true }));
-    this.appInstance.use(methodOverride('_method'));
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(methodOverride('_method'));
     if (process.env.NODE_ENV !== 'test') {
-      this.appInstance.use(morgan('tiny'));
+      this.app.use(morgan('tiny'));
     }
   }
 
   routes() {
-    this.appInstance.use(router);
+    this.app.use(router);
   }
 
   errorHandlers() {
-    this.appInstance.use((error, req, res, next) => {
-      const { statusCode = 500 } = error;
-      if (!error.message) {
-        error.message = 'Internal sever error';
-      }
-      res.status(statusCode).render('error', { error });
-      return next(error);
-    });
+    this.app.use(errorHandlerHelper);
   }
 }
 
-module.exports = new AppController();
+module.exports = new AppController().app;

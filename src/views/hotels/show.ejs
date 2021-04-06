@@ -21,5 +21,17 @@
                 </form>
             </section>
         </main>
+        <form class="mb-3" action="" method="POST">
+            <h2>Avalie esse hotel</h2>
+            <div class="mb-3">
+                <label class="form-label" for="rating">Nota</label>
+                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="text">Texto</label>
+                <textarea class="form-control" name="review[text]" id="text" rows="3"></textarea>
+            </div>
+            <button class="btn btn-success">Enviar</button>
+        </form>
     </div>
 </div>

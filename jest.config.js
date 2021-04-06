@@ -20,7 +20,12 @@ module.exports = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['routes.js', 'src/**', '!src/database/seed/**'],
+  collectCoverageFrom: [
+    'routes.js',
+    'src/**',
+    '!src/database/seed/**',
+    '!src/lib/**',
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: '__tests__/coverage',
@@ -54,10 +59,10 @@ module.exports = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: undefined,
+  globalSetup: '<rootDir>/__tests__/setup/setup.js',
 
   // A path to a module which exports an async function that is triggered once after all test suites
-  // globalTeardown: undefined,
+  globalTeardown: '<rootDir>/__tests__/setup/teardown.js',
 
   // A set of global variables that need to be available in all test environments
   // globals: {},
@@ -128,7 +133,7 @@ module.exports = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  // setupFilesAfterEnv: [],
+  setupFilesAfterEnv: ['<rootDir>/__tests__/setup/setupAfterEnv.js'],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -137,7 +142,7 @@ module.exports = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: 'node',
+  testEnvironment: '<rootDir>/__tests__/setup/environment.js',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
