@@ -1,6 +1,6 @@
 const supertest = require('supertest');
-const app = require('../../src/app');
 const factory = require('../factories');
+const app = require('../../src/app');
 const Hotel = require('../../src/models/hotel');
 
 const request = supertest(app);
@@ -36,7 +36,7 @@ describe('Hotel Routes', () => {
     expect(res.headers['content-type']).toMatch('html');
   });
 
-  it('should save a new hotel with valid data', async () => {
+  it('should create a hotel with valid data', async () => {
     const requestBody = {
       hotel: {
         name: 'NewHotel',
