@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const AppError = require('../utils/app_error');
 
 module.exports = function (schema) {
