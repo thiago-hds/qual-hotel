@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "node/no-unpublished-require": false,
+    "node/no-missing-require": false
+  }
+}
