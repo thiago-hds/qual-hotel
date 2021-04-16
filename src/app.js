@@ -8,7 +8,7 @@ const path = require('path');
 const morgan = require('morgan');
 
 const databaseHelper = require('./helpers/database');
-const errorHandlerHelper = require('./helpers/errorHandler');
+const errorHandlerHelper = require('./helpers/error_handler');
 
 class AppController {
   constructor() {

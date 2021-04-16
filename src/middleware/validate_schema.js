@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const AppError = require('../utils/AppError');
+const AppError = require('../utils/app_error');
 
 module.exports = function (schema) {
   return (req, res, next) => {

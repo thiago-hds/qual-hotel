@@ -1,10 +1,10 @@
 const routes = require('express').Router();
-const wrapAsync = require('./src/utils/wrapAsync');
+const wrapAsync = require('./src/utils/wrap_async');
 const Hotel = require('./src/models/hotel');
 const Review = require('./src/models/review');
-const AppError = require('./src/utils/AppError');
+const AppError = require('./src/utils/app_error');
 const validateSchema = require('./src/middleware/validate_schema');
-const hotelSchema = require('./src/validation/hotelSchema');
+const hotelSchema = require('./src/validation/hotel_schema');
 const reviewSchema = require('./src/validation/review_schema');
 
 routes.get('/', (req, res) => {
