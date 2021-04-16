@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="row">
-    <div class="col-6 offset-3">
+    <div class="col-6">
         <main class="card mb-3">
             <img src="<%= hotel.image %>" class="card-img-top" alt="...">
             <section class="card-body">
@@ -21,7 +21,9 @@
                 </form>
             </section>
         </main>
-        <form class="mb-3" action="" method="POST">
+    </div>
+    <div class="col-6">
+        <form class="mb-3 validated-form" action="/hotels/<%= hotel._id %>/reviews" method="POST" novalidate>
             <h2>Avalie esse hotel</h2>
             <div class="mb-3">
                 <label class="form-label" for="rating">Nota</label>
@@ -29,9 +31,21 @@
             </div>
             <div class="mb-3">
                 <label class="form-label" for="text">Texto</label>
-                <textarea class="form-control" name="review[text]" id="text" rows="3"></textarea>
+                <textarea class="form-control" name="review[text]" id="text" rows="3" required></textarea>
+                <div class="invalid-feedback">Texto é obrigatório</div>
             </div>
             <button class="btn btn-success">Enviar</button>
         </form>
+        <% for(let review of hotel.reviews) { %>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title"> <%= review.rating %> / 5 </h5>
+                <p class="card-text"> <%= review.text %> </p>
+                <form action="/hotels/<%= hotel.id %>/reviews/<%= review.id%>?_method=DELETE" method="POST">
+                    <button class="btn btn-sm btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
     </div>
 </div>

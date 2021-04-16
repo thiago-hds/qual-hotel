@@ -1,8 +1,11 @@
 const routes = require('express').Router();
 const wrapAsync = require('./src/utils/wrapAsync');
 const Hotel = require('./src/models/hotel');
+const Review = require('./src/models/review');
 const AppError = require('./src/utils/AppError');
-const validateHotel = require('./src/middleware/validateHotel');
+const validateSchema = require('./src/middleware/validate_schema');
+const hotelSchema = require('./src/validation/hotelSchema');
+const reviewSchema = require('./src/validation/review_schema');
 
 routes.get('/', (req, res) => {
   res.render('home');
@@ -22,8 +25,8 @@ routes.get('/hotels/new', (req, res) => {
 
 routes.post(
   '/hotels',
-  validateHotel,
-  wrapAsync(async (req, res, next) => {
+  validateSchema(hotelSchema),
+  wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
     await hotel.save();
     res.redirect(`/hotels/${hotel._id}`);
@@ -33,7 +36,7 @@ routes.post(
 routes.get(
   '/hotels/:id',
   wrapAsync(async (req, res) => {
-    const hotel = await Hotel.findById(req.params.id);
+    const hotel = await Hotel.findById(req.params.id).populate('reviews');
     if (!hotel) {
       throw new AppError(404, ' Hotel not found');
     }
@@ -54,7 +57,7 @@ routes.get(
 
 routes.put(
   '/hotels/:id',
-  validateHotel,
+  validateSchema(hotelSchema),
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);
@@ -68,6 +71,30 @@ routes.delete(
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);
     res.redirect('/hotels');
+  })
+);
+
+routes.post(
+  '/hotels/:id/reviews',
+  validateSchema(reviewSchema),
+  wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const hotel = await Hotel.findById(id);
+    const review = new Review(req.body.review);
+    hotel.reviews.push(review);
+    await review.save();
+    await hotel.save();
+    res.redirect(`/hotels/${id}`);
+  })
+);
+
+routes.delete(
+  '/hotels/:id/reviews/:reviewId',
+  wrapAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/hotels/${id}`);
   })
 );
 

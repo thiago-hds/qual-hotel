@@ -1,4 +1,4 @@
-const app = require('./src/app').appInstance;
+const app = require('./src/app');
 
 app.listen(3000, () => {
   console.log('Listening on http://localhost:3000');
