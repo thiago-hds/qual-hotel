@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const connect = async () => {
   if (!mongoose.connection.readyState) {
-    await mongoose.connect(
+    const mongoURL =
       process.env.NODE_ENV === 'test'
         ? global.__DB_URL__
-        : process.env.DATABASE_URL,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-      }
-    );
+        : process.env.DATABASE_URL;
+
+    await mongoose.connect(mongoURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
   }
 };
 
