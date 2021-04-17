@@ -2,6 +2,7 @@ const supertest = require('supertest');
 const factory = require('../factories');
 const app = require('../../src/app');
 const Hotel = require('../../src/models/hotel');
+const Review = require('../../src/models/review');
 
 const request = supertest(app);
 
@@ -118,9 +119,11 @@ describe('Hotel Routes', () => {
     const res = await request.delete(`/hotels/${hotel._id}`);
 
     const hotelExists = await Hotel.exists({ _id: hotel._id });
+    const reviewExists = await Review.exists({ _id: hotel.reviews[0]._id });
 
     expect(res.status).toBe(302);
     expect(res.redirect).toBe(true);
     expect(hotelExists).toBe(false);
+    expect(reviewExists).toBe(false);
   });
 });
