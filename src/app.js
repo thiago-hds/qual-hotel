@@ -3,12 +3,15 @@ require('dotenv').config();
 const express = require('express');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
-const router = require('../routes');
 const path = require('path');
 const morgan = require('morgan');
 
+const hotelsRouter = require('../routes/hotels');
+const reviewsRouter = require('../routes/reviews');
 const databaseHelper = require('./helpers/database');
 const errorHandlerHelper = require('./helpers/error_handler');
+
+const AppError = require('./utils/app_error');
 
 class AppController {
   constructor() {
@@ -40,7 +43,12 @@ class AppController {
   }
 
   routes() {
-    this.app.use(router);
+    this.app.use('/hotels', hotelsRouter);
+    this.app.use('/hotels/:id/reviews', reviewsRouter);
+
+    this.app.all('*', (req, res, next) => {
+      next(new AppError(404, 'Page not found'));
+    });
   }
 
   errorHandlers() {
