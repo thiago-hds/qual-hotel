@@ -21,6 +21,7 @@ routes.post(
     hotel.reviews.push(review);
     await review.save();
     await hotel.save();
+    req.flash('success', 'Avaliação incluída com sucesso');
     res.redirect(`/hotels/${id}`);
   })
 );
@@ -31,6 +32,7 @@ routes.delete(
     const { id, reviewId } = req.params;
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
+    req.flash('success', 'Avaliação excluída com sucesso');
     res.redirect(`/hotels/${id}`);
   })
 );

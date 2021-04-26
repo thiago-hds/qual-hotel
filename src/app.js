@@ -1,10 +1,12 @@
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
-const path = require('path');
 const morgan = require('morgan');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const hotelsRouter = require('../routes/hotels');
 const reviewsRouter = require('../routes/reviews');
@@ -37,6 +39,27 @@ class AppController {
   middleware() {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(methodOverride('_method'));
+    this.app.use(express.static(path.join(__dirname, '..', 'public')));
+
+    /* session */
+    const sessionConfig = {
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      },
+    };
+    this.app.use(session(sessionConfig));
+
+    /* flash */
+    this.app.use(flash());
+    this.app.use((req, res, next) => {
+      res.locals.success = req.flash('success');
+      next();
+    });
+
     if (process.env.NODE_ENV !== 'test') {
       this.app.use(morgan('tiny'));
     }

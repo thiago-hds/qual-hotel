@@ -23,6 +23,7 @@ routes.post(
   wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
     await hotel.save();
+    req.flash('success', 'Hotel criado com sucesso');
     res.redirect(`/hotels/${hotel._id}`);
   })
 );
@@ -55,6 +56,7 @@ routes.put(
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);
+    req.flash('success', 'Hotel editado com sucesso');
     res.redirect(`/hotels/${id}`);
   })
 );
@@ -64,6 +66,7 @@ routes.delete(
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);
+    req.flash('success', 'Hotel excluído com sucesso');
     res.redirect('/hotels');
   })
 );
