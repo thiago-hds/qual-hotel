@@ -42,6 +42,7 @@ class AppController {
     this.app.use(express.static(path.join(__dirname, '..', 'public')));
 
     /* session */
+    // TODO put it on a config folder
     const sessionConfig = {
       secret: process.env.SESSION_SECRET,
       resave: false,
@@ -57,6 +58,7 @@ class AppController {
     this.app.use(flash());
     this.app.use((req, res, next) => {
       res.locals.success = req.flash('success');
+      res.locals.error = req.flash('success');
       next();
     });
 
