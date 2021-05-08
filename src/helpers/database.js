@@ -5,7 +5,7 @@ const connect = async () => {
     const mongoURL =
       process.env.NODE_ENV === 'test'
         ? global.__DB_URL__
-        : process.env.DATABASE_URL;
+        : process.env.DATABASE_CONNECTION_URI;
 
     await mongoose.connect(mongoURL, {
       useNewUrlParser: true,

@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 const faker = require('faker');
 const Hotel = require('../../models/hotel');
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
-});
 
-const connectionUrl = `mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`;
-console.log(connectionUrl);
+const connectionUri = process.env.DATABASE_CONNECTION_URI;
+console.log(`Connecting to ${connectionUri}`);
 
-mongoose.connect(connectionUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(connectionUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .catch((error) => console.error(error));
 
 const db = mongoose.connection;
-db.on('error', console.log.bind(console, 'Connection error'));
+db.on('error', (error) => console.error(error));
 db.once('open', () => {
   console.log('Database connected');
 });
