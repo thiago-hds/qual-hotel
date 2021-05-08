@@ -10,19 +10,29 @@ services:
       - 9229:9229
     environment:
       - SERVER_PORT=${SERVER_PORT}
-      - DATABASE_CONNECTION_URI=mongodb://mongo:27017/qual_hotel
+      - DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
       - SESSION_SECRET=${SESSION_SECRET}
+      - MONGOMS_DEBUG=${MONGOMS_DEBUG}
     volumes:
       - ./:/app
     command: yarn run debug
 
   mongo:
-    image: mongo:4.2.8
+    image: mongo:4.2.13
     ports:
       - 27017:27017
     volumes:
       - mongodb:/data/db
       - mongodb_config:/data/configdb
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      # - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      # - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongo
 volumes:
   mongodb:
   mongodb_config:

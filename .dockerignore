@@ -1,5 +1,6 @@
 .git
-node_modules
-yarn-error.log
 .env
 .env.example
+yarn-error.log
+globalConfig.json
+node_modules

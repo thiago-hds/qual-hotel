@@ -4,7 +4,7 @@ const connect = async () => {
   if (!mongoose.connection.readyState) {
     const mongoURL =
       process.env.NODE_ENV === 'test'
-        ? global.__DB_URL__
+        ? process.env.MONGO_URL // env variable set by @shelf/jest-mongodb
         : process.env.DATABASE_CONNECTION_URI;
 
     await mongoose.connect(mongoURL, {
