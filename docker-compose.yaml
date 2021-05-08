@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    env_file: ./.env
+    build:
+      context: .
+    ports:
+      - 3000:3000
+      - 9229:9229
+    environment:
+      - SERVER_PORT=${SERVER_PORT}
+      - DATABASE_CONNECTION_URI=mongodb://mongo:27017/qual_hotel
+      - SESSION_SECRET=${SESSION_SECRET}
+    volumes:
+      - ./:/app
+    command: yarn run debug
+
+  mongo:
+    image: mongo:4.2.8
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+volumes:
+  mongodb:
+  mongodb_config:
