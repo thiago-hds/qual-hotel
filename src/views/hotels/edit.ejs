@@ -1,46 +1,44 @@
 <% layout('layouts/boilerplate') %>
+<h1 class="text-center"> <%= hotel? 'Editar' : 'Novo' %> Hotel</h1>
 <div class="row">
-    <h1 class="text-center"> <%= hotel? 'Editar' : 'Novo' %> Hotel</h1>
-    <div class="col-6 offset-3">
-        <form action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> " method="POST" class="validated-form"
-            novalidate>
-            <div class="mb-3">
-                <label class="form-label" for="name">Nome</label>
-                <input class="form-control" type="text" id="name" name="hotel[name]" value='<%= hotel?.name %>'
-                    required>
-                <div class="invalid-feedback">Nome é obrigatório</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="location">Local</label>
-                <input class="form-control" type="text" id="location" name="hotel[location]"
-                    value='<%= hotel?.location %>' required>
-                <div class="invalid-feedback">Local é obrigatório</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="price">Preço</label>
-                <div class="input-group">
-                    <span class="input-group-text" id="price-label">R$</span>
-                    <input type="text" class="form-control" id="price" name="hotel[price]" placeholder="0"
-                        aria-label="price" aria-describedby="price-label" required>
-                    <div class="invalid-feedback">Preço é obrigatório</div>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="image">Imagem</label>
-                <input class="form-control" type="text" id="image" name="hotel[image]" value='<%= hotel?.image %>'
-                    required>
-                <div class="invalid-feedback">Imagem é obrigatório</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="description">Descrição</label>
-                <textarea class="form-control" type="text" id="description" name="hotel[description]"
-                    required><%= hotel?.description %></textarea>
-                <div class="invalid-feedback">Descrição é obrigatório</div>
-            </div>
-            <div class="mb-3">
-                <a class="btn btn-danger" href="/hotels">Cancelar</a>
-                <button class="btn btn-success">Salvar</button>
-            </div>
-        </form>
-    </div>
+  <div class="col-6 offset-3">
+    <form action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> " method="POST" class="validated-form"
+      novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="name">Nomes</label>
+        <input class="form-control" type="text" id="name" name="hotel[name]" value='<%= hotel?.name %>' required>
+        <div class="invalid-feedback">Nome é obrigatório</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Local</label>
+        <input class="form-control" type="text" id="location" name="hotel[location]" value='<%= hotel?.location %>'
+          required>
+        <div class="invalid-feedback">Local é obrigatório</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="price">Preço</label>
+        <div class="input-group">
+          <span class="input-group-text" id="price-label">R$</span>
+          <input type="text" class="form-control" id="price" name="hotel[price]" placeholder="0" aria-label="price"
+            aria-describedby="price-label" required>
+          <div class="invalid-feedback">Preço é obrigatório</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="image">Imagem</label>
+        <input class="form-control" type="text" id="image" name="hotel[image]" value='<%= hotel?.image %>' required>
+        <div class="invalid-feedback">Imagem é obrigatório</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="description">Descrição</label>
+        <textarea class="form-control" type="text" id="description" name="hotel[description]"
+          required><%= hotel?.description %></textarea>
+        <div class="invalid-feedback">Descrição é obrigatório</div>
+      </div>
+      <div class="mb-3">
+        <a class="btn btn-danger" href="/hotels">Cancelar</a>
+        <button class="btn btn-success">Salvar</button>
+      </div>
+    </form>
+  </div>
 </div>

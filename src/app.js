@@ -7,9 +7,14 @@ const ejsMate = require('ejs-mate');
 const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
-const hotelsRouter = require('../routes/hotels');
-const reviewsRouter = require('../routes/reviews');
+const User = require('./models/user');
+const authRoutes = require('./routes/auth');
+const hotelsRoutes = require('./routes/hotels');
+const reviewsRoutes = require('./routes/reviews');
+
 const databaseHelper = require('./helpers/database');
 const errorHandlerHelper = require('./helpers/error_handler');
 
@@ -54,6 +59,14 @@ class AppController {
     };
     this.app.use(session(sessionConfig));
 
+    /* passport */
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
+    passport.use(new LocalStrategy(User.authenticate()));
+
+    passport.serializeUser(User.serializeUser());
+    passport.deserializeUser(User.deserializeUser());
+
     /* flash */
     this.app.use(flash());
     this.app.use((req, res, next) => {
@@ -68,8 +81,9 @@ class AppController {
   }
 
   routes() {
-    this.app.use('/hotels', hotelsRouter);
-    this.app.use('/hotels/:id/reviews', reviewsRouter);
+    this.app.use('/', authRoutes);
+    this.app.use('/hotels', hotelsRoutes);
+    this.app.use('/hotels/:id/reviews', reviewsRoutes);
 
     this.app.all('*', (req, res, next) => {
       next(new AppError(404, 'Page not found'));
