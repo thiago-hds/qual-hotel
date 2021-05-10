@@ -1,9 +1,9 @@
 const routes = require('express').Router();
-const wrapAsync = require('../src/utils/wrap_async');
-const Hotel = require('../src/models/hotel');
-const AppError = require('../src/utils/app_error');
-const validateSchema = require('../src/middleware/validate_schema');
-const hotelSchema = require('../src/validation/hotel_schema');
+const wrapAsync = require('../utils/wrap_async');
+const Hotel = require('../models/hotel');
+const AppError = require('../utils/app_error');
+const validateSchema = require('../middleware/validate_schema');
+const hotelSchema = require('../validation/hotel_schema');
 
 routes.get(
   '/',

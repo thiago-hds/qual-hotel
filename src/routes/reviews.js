@@ -1,12 +1,12 @@
 const routes = require('express').Router({ mergeParams: true });
 
-const wrapAsync = require('../src/utils/wrap_async');
-const validateSchema = require('../src/middleware/validate_schema');
+const wrapAsync = require('../utils/wrap_async');
+const validateSchema = require('../middleware/validate_schema');
 
-const Review = require('../src/models/review');
-const Hotel = require('../src/models/hotel');
-const reviewSchema = require('../src/validation/review_schema');
-const AppError = require('../src/utils/app_error');
+const Review = require('../models/review');
+const Hotel = require('../models/hotel');
+const reviewSchema = require('../validation/review_schema');
+const AppError = require('../utils/app_error');
 
 routes.post(
   '/',
