@@ -2,8 +2,9 @@ const routes = require('express').Router();
 const wrapAsync = require('../utils/wrap_async');
 const Hotel = require('../models/hotel');
 const AppError = require('../utils/app_error');
-const validateSchema = require('../middleware/validate_schema');
+const validateSchemaMiddleware = require('../middleware/validate_schema');
 const hotelSchema = require('../validation/hotel_schema');
+const passportIsAuthenticated = require('../middleware/passport_is_authenticated');
 
 routes.get(
   '/',
@@ -13,13 +14,13 @@ routes.get(
   })
 );
 
-routes.get('/new', (req, res) => {
+routes.get('/new', passportIsAuthenticated, (req, res) => {
   res.render('hotels/edit', { hotel: null });
 });
 
 routes.post(
   '/',
-  validateSchema(hotelSchema),
+  validateSchemaMiddleware(hotelSchema),
   wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
     await hotel.save();
@@ -52,7 +53,7 @@ routes.get(
 
 routes.put(
   '/:id',
-  validateSchema(hotelSchema),
+  validateSchemaMiddleware(hotelSchema),
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);

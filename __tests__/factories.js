@@ -1,8 +1,26 @@
 const faker = require('faker');
+const User = require('../src/models/user');
 const Hotel = require('../src/models/hotel');
 const Review = require('../src/models/review');
 
 const { factory } = require('factory-girl');
+
+factory.define(
+  'User',
+  User,
+  {
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+  {
+    afterBuild: (model, attrs) => {
+      const password = attrs.password ?? faker.internet.password();
+      return model.setPassword(password);
+    },
+  }
+);
 
 factory.define('Review', Review, {
   rating: Math.floor(Math.random() * 6),

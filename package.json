@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest -c jest.config.js",
-    "unit": "NODE_ENV=test jest -c jest.unit.config.js",
-    "integration": "NODE_ENV=test jest -c jest.integration.config.js",
+    "test": "NODE_ENV=test jest -i -c jest.config.js",
+    "unit": "NODE_ENV=test jest -i -c jest.unit.config.js",
+    "integration": "NODE_ENV=test jest -i -c jest.integration.config.js",
     "dev": "nodemon server.js",
     "debug": "nodemon --inspect=0.0.0.0:9229 server.js",
     "seed": "node src/database/seed"

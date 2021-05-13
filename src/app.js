@@ -8,15 +8,14 @@ const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
 
 const User = require('./models/user');
 const authRoutes = require('./routes/auth');
 const hotelsRoutes = require('./routes/hotels');
 const reviewsRoutes = require('./routes/reviews');
 
-const databaseHelper = require('./helpers/database');
-const errorHandlerHelper = require('./helpers/error_handler');
+const databaseHelper = require('./utils/database');
+const errorHandlerMiddleware = require('./middleware/error_handler');
 
 const AppError = require('./utils/app_error');
 
@@ -62,7 +61,7 @@ class AppController {
     /* passport */
     this.app.use(passport.initialize());
     this.app.use(passport.session());
-    passport.use(new LocalStrategy(User.authenticate()));
+    passport.use(User.createStrategy());
 
     passport.serializeUser(User.serializeUser());
     passport.deserializeUser(User.deserializeUser());
@@ -71,7 +70,7 @@ class AppController {
     this.app.use(flash());
     this.app.use((req, res, next) => {
       res.locals.success = req.flash('success');
-      res.locals.error = req.flash('success');
+      res.locals.error = req.flash('error');
       next();
     });
 
@@ -91,7 +90,7 @@ class AppController {
   }
 
   errorHandlers() {
-    this.app.use(errorHandlerHelper);
+    this.app.use(errorHandlerMiddleware);
   }
 }
 
