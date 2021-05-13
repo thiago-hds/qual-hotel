@@ -27,13 +27,19 @@ factory.define('Review', Review, {
   text: faker.lorem.paragraph(),
 });
 
-factory.define('Hotel', Hotel, {
-  name: `Hotel ${faker.company.companyName()}`,
-  image: 'https://source.unsplash.com/collection/9273901',
-  price: faker.commerce.price(),
-  description: faker.company.catchPhrase(),
-  location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
-  reviews: factory.assocMany('Review', 3),
+factory.define('Hotel', Hotel, (buildOptions) => {
+  let attrs = {
+    name: `Hotel ${faker.company.companyName()}`,
+    image: faker.image.imageUrl(),
+    price: faker.commerce.price(),
+    description: faker.company.catchPhrase(),
+    location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
+  };
+
+  if (buildOptions.associateReviews) {
+    attrs.reviews = factory.assocMany('Review', 3);
+  }
+  return attrs;
 });
 
 module.exports = factory;

@@ -3,127 +3,188 @@ const factory = require('../factories');
 const app = require('../../src/app');
 const Hotel = require('../../src/models/hotel');
 const Review = require('../../src/models/review');
+const User = require('../../src/models/user');
 
 const request = supertest(app);
 
-describe('Hotel Routes', () => {
-  it('should render hotel index page', async () => {
-    const res = await request.get('/hotels');
+describe('Hotel', () => {
+  describe('Index', () => {
+    it('should render hotel index page', async () => {
+      // Act
+      const res = await request.get('/hotels');
 
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch('html');
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch('html');
+    });
   });
 
-  it('should render a hotel show page when hotel id is valid', async () => {
-    const hotel = await factory.create('Hotel');
+  describe('Show', () => {
+    it('should render a hotel show page when the hotel id exists', async () => {
+      // Arrange
+      const hotel = await factory.create('Hotel');
 
-    const res = await request.get(`/hotels/${hotel._id}`);
+      // Act
+      const res = await request.get(`/hotels/${hotel._id}`);
 
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch('html');
-    expect(res.text).toMatch(new RegExp(hotel.name));
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch('html');
+      expect(res.text).toMatch(new RegExp(hotel.name));
+    });
+
+    it("should not render a hotel show page when the hotel id doesn't exist", async () => {
+      // Arrange
+      const unsavedHotel = await factory.build('Hotel');
+
+      // Act
+      const res = await request.get(`/hotels/${unsavedHotel._id}`);
+
+      // Assert
+      expect(res.status).toBe(404);
+    });
   });
 
-  it('should not render a hotel show page when hotel id is invalid', async () => {
-    const hotelId = '1234';
-    const res = await request.get(`/hotels/${hotelId}`);
+  describe('Create', () => {
+    it('should render create hotel page when the user is authenticated', async () => {
+      // Arrange
+      const user = await factory.create('User', { password: '123123' });
+      await User.authenticate(user.email, '123123');
 
-    expect(res.status).toBe(404);
+      // Act
+      const res = await request.get('/hotels/new');
+
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch('html');
+    });
+
+    it('should not render create hotel page when the user is unauthenticated', async () => {
+      // Act
+      const res = await request.get('/hotels/new');
+
+      // Assert
+      expect(res.status).toBe(401);
+      expect(res.redirect).toBe(true);
+    });
   });
 
-  it('should render new hotel page', async () => {
-    const res = await request.get('/hotels/new');
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch('html');
-  });
+  describe('Store', () => {
+    it('should store a new hotel when the request data is valid', async () => {
+      // Arrange
+      const validHotelData = await factory.attrs('Hotel');
+      const requestBody = { hotel: validHotelData };
 
-  it('should create a hotel with valid data', async () => {
-    const requestBody = {
-      hotel: {
-        name: 'NewHotel',
-        image: 'http://server.com/image',
-        price: 100.99,
-        description: 'New test hotel',
-        location: 'Belo Horizonte - MG',
-      },
-    };
+      // Act
+      const res = await request.post('/hotels').type('form').send(requestBody);
+      const newHotelExists = await Hotel.exists({
+        name: validHotelData.name,
+      });
 
-    const res = await request.post('/hotels').type('form').send(requestBody);
-    const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
+      // Assert
+      expect(res.status).toBe(302);
+      expect(res.redirect).toBe(true);
+      expect(newHotelExists).toBe(true);
+    });
 
-    expect(res.status).toBe(302);
-    expect(res.redirect).toBe(true);
-    expect(newHotelExists).toBe(true);
-  });
-
-  it('should not save a new hotel with invalid data', async () => {
-    const requestBody = {
-      hotel: {
-        name: 'NewHotel',
-        image: 'http://server.com/image',
-        price: 'price', // string como preço
+    it('should not store a new hotel when the request data is invalid', async () => {
+      // Arrange
+      const invalidHotelData = await factory.attrs('Hotel', {
         description: undefined,
-        location: 'Belo Horizonte - MG',
-      },
-    };
+        price: 'price',
+      });
+      const requestBody = { hotel: invalidHotelData };
 
-    const res = await request.post('/hotels').type('form').send(requestBody);
-    const newHotelExists = await Hotel.exists({ name: requestBody.hotel.name });
+      // Act
+      const res = await request.post('/hotels').type('form').send(requestBody);
+      const newHotelExists = await Hotel.exists({
+        name: requestBody.hotel.name,
+      });
 
-    expect(res.status).toBe(400);
-    expect(newHotelExists).toBe(false);
+      // Assert
+      expect(res.status).toBe(400);
+      expect(newHotelExists).toBe(false);
+    });
   });
 
-  it('should render edit hotel page', async () => {
-    const hotel = await factory.create('Hotel');
+  describe('Edit', () => {
+    it('should render edit hotel page', async () => {
+      // Arrange
+      const hotel = await factory.create('Hotel');
 
-    const res = await request.get(`/hotels/${hotel._id}/edit`);
-    expect(res.status).toBe(200);
-    expect(res.headers['content-type']).toMatch('html');
+      // Act
+      const res = await request.get(`/hotels/${hotel._id}/edit`);
+
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch('html');
+    });
+
+    it("should not render hotel edit page when the hotel id doesn't exist", async () => {
+      // Arrange
+      const unsavedHotel = await factory.build('Hotel');
+
+      // Act
+      const res = await request.get(`/hotels/${unsavedHotel._id}/edit`);
+
+      // Assert
+      expect(res.status).toBe(404);
+    });
   });
 
-  it('should not render a hotel edit page when hotel id is invalid', async () => {
-    const hotelId = '1234';
-    const res = await request.get(`/hotels/${hotelId}/edit`);
+  describe('Update', () => {
+    it('should update a hotel then the request data is valid', async () => {
+      // Arrange
+      const existentHotel = await factory.create('Hotel');
+      const updatedHotelData = await factory.attrs('Hotel');
+      const requestBody = { hotel: updatedHotelData };
 
-    expect(res.status).toBe(404);
+      // Act
+      const res = await request
+        .put(`/hotels/${existentHotel._id}`)
+        .type('form')
+        .send(requestBody);
+      const updatedHotelExists = await Hotel.exists({
+        name: updatedHotelData.name,
+      });
+
+      // Assert
+      expect(res.redirect).toBe(true);
+      expect(updatedHotelExists).toBe(true);
+    });
+
+    // TODO test update when data is invalid
   });
 
-  it('should edit a hotel with valid data', async () => {
-    const hotel = await factory.create('Hotel');
+  describe('Delete', () => {
+    it('should delete a hotel', async () => {
+      // Arrange
+      const hotel = await factory.create('Hotel');
 
-    const requestBody = {
-      hotel: {
-        name: 'NewHotel',
-        image: 'http://server.com/image',
-        price: 100.99,
-        description: 'New test hotel',
-        location: 'Belo Horizonte - MG',
-      },
-    };
+      // Act
+      const res = await request.delete(`/hotels/${hotel._id}`);
+      const hotelExists = await Hotel.exists({ _id: hotel._id });
 
-    const res = await request
-      .put(`/hotels/${hotel._id}`)
-      .type('form')
-      .send(requestBody);
+      // Assert
+      expect(res.status).toBe(302);
+      expect(res.redirect).toBe(true);
+      expect(hotelExists).toBe(false);
+    });
 
-    const hotelExists = await Hotel.exists({ name: requestBody.hotel.name });
+    it('should delete associated reviews when the hotel is deleted', async () => {
+      // Arrange
+      const hotel = await factory.create(
+        'Hotel',
+        {},
+        { associateReviews: true }
+      );
 
-    expect(res.redirect).toBe(true);
-    expect(hotelExists).toBe(true);
-  });
+      // Act
+      const res = await request.delete(`/hotels/${hotel._id}`);
+      const reviewExists = await Review.exists({ _id: hotel.reviews[0]._id });
 
-  it('should delete a hotel', async () => {
-    const hotel = await factory.create('Hotel');
-
-    const res = await request.delete(`/hotels/${hotel._id}`);
-
-    const hotelExists = await Hotel.exists({ _id: hotel._id });
-    const reviewExists = await Review.exists({ _id: hotel.reviews[0]._id });
-
-    expect(res.status).toBe(302);
-    expect(res.redirect).toBe(true);
-    expect(hotelExists).toBe(false);
-    expect(reviewExists).toBe(false);
+      // Assert
+      expect(reviewExists).toBe(false);
+    });
   });
 });

@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const databaseHelper = require('../../src/helpers/database');
+const databaseHelper = require('../../src/utils/database');
 
 beforeAll(() => {
   return databaseHelper.connect();
