@@ -6,7 +6,7 @@ beforeAll(() => {
   return databaseHelper.connect();
 });
 
-beforeEach(() => {
+afterEach(() => {
   return databaseHelper.truncate();
 });
 
