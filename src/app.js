@@ -44,6 +44,7 @@ class AppController {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(methodOverride('_method'));
     this.app.use(express.static(path.join(__dirname, '..', 'public')));
+    // this.app.use(cookieParser());
 
     /* session */
     // TODO put it on a config folder
@@ -68,9 +69,12 @@ class AppController {
 
     /* flash */
     this.app.use(flash());
+
+    /* locals */
     this.app.use((req, res, next) => {
       res.locals.success = req.flash('success');
       res.locals.error = req.flash('error');
+      res.locals.sessionUser = req.user;
       next();
     });
 
