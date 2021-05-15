@@ -2,6 +2,7 @@ const routes = require('express').Router({ mergeParams: true });
 
 const wrapAsync = require('../utils/wrap_async');
 const validateSchemaMiddleware = require('../middleware/validate_schema');
+const isUserAuthenticated = require('../middleware/is_user_authenticated');
 
 const Review = require('../models/review');
 const Hotel = require('../models/hotel');
@@ -10,6 +11,7 @@ const AppError = require('../utils/app_error');
 
 routes.post(
   '/',
+  isUserAuthenticated,
   validateSchemaMiddleware(reviewSchema),
   wrapAsync(async (req, res) => {
     const { id } = req.params;
@@ -28,6 +30,7 @@ routes.post(
 
 routes.delete(
   '/:reviewId',
+  isUserAuthenticated,
   wrapAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
