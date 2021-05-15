@@ -1,4 +1,7 @@
 .git
+.gitignore
+.prettierrc.json
+.eslintrc.json
 .env
 .env.example
 yarn-error.log
