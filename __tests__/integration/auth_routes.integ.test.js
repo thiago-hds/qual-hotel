@@ -32,9 +32,10 @@ describe('Authentication', () => {
         email: requestBody.user.email,
       });
       // Assert
+      expect(newUserExists).toBe(true);
       expect(res.status).toBe(302);
       expect(res.redirect).toBe(true);
-      expect(newUserExists).toBe(true);
+      expect(res.headers['location']).toMatch('/');
     });
 
     it('should not register a new user when the request data is invalid', async () => {
@@ -89,9 +90,6 @@ describe('Authentication', () => {
       expect(res.status).toBe(302);
       expect(res.redirect).toBe(true);
       expect(res.headers['location']).toMatch('/');
-      expect(res.headers['set-cookie']).toEqual(
-        expect.arrayContaining([expect.stringMatching('connect.sid')])
-      );
     });
 
     it("should not login when the email doesn't exist", async () => {
@@ -120,6 +118,25 @@ describe('Authentication', () => {
       expect(res.status).toBe(302);
       expect(res.redirect).toBe(true);
       expect(res.headers['location']).toMatch('/login');
+    });
+
+    it('should redirect to original route after login', async () => {
+      // Arrange
+      const agent = supertest.agent(app);
+      const originalUrl = '/hotels/new';
+      await agent.get(originalUrl).expect(302).expect('Location', '/login');
+
+      const password = faker.internet.password();
+      const user = await factory.create('User', { password });
+      const requestData = { email: user.email, password };
+
+      // Act
+      const res = await agent.post('/login').type('form').send(requestData);
+
+      // Assert
+      expect(res.status).toBe(302);
+      expect(res.redirect).toBe(true);
+      expect(res.headers['location']).toMatch(originalUrl);
     });
   });
 

@@ -23,9 +23,11 @@ routes.post(
       const { firstName, lastName, email, password } = req.body.user;
       const user = new User({ firstName, lastName, email });
       const registeredUser = await User.register(user, password);
-
-      req.flash('success', `Bem vindo, ${user.firstName}!`);
-      res.redirect('/hotels');
+      req.login(registeredUser, (err) => {
+        if (err) return next(err);
+        req.flash('success', `Olá ${user.firstName}!`);
+        res.redirect('/');
+      });
     } catch (err) {
       req.flash('error', err.message);
       res.redirect(400, '/register');
@@ -41,8 +43,11 @@ routes.post(
   '/login',
   authenticateUser,
   wrapAsync(async (req, res) => {
+    const redirectUrl = req.session.returnTo || '/';
+    delete req.session.returnTo;
+
     req.flash('success', `Bem vindo de volta, ${req.user.firstName}!`);
-    res.redirect('/');
+    res.redirect(redirectUrl);
   })
 );
 
