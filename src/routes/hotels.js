@@ -4,7 +4,7 @@ const Hotel = require('../models/hotel');
 const AppError = require('../utils/app_error');
 const validateSchemaMiddleware = require('../middleware/validate_schema');
 const hotelSchema = require('../validation/hotel_schema');
-const passportIsAuthenticated = require('../middleware/passport_is_authenticated');
+const isUserAuthenticated = require('../middleware/is_user_authenticated');
 
 routes.get(
   '/',
@@ -14,12 +14,13 @@ routes.get(
   })
 );
 
-routes.get('/new', passportIsAuthenticated, (req, res) => {
+routes.get('/new', isUserAuthenticated, (req, res) => {
   res.render('hotels/edit', { hotel: null });
 });
 
 routes.post(
   '/',
+  isUserAuthenticated,
   validateSchemaMiddleware(hotelSchema),
   wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
@@ -42,6 +43,7 @@ routes.get(
 
 routes.get(
   '/:id/edit',
+  isUserAuthenticated,
   wrapAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
     if (!hotel) {
@@ -53,6 +55,7 @@ routes.get(
 
 routes.put(
   '/:id',
+  isUserAuthenticated,
   validateSchemaMiddleware(hotelSchema),
   wrapAsync(async (req, res) => {
     const { id } = req.params;
@@ -64,6 +67,7 @@ routes.put(
 
 routes.delete(
   '/:id',
+  isUserAuthenticated,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);

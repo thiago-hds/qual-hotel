@@ -5,7 +5,11 @@ const User = require('../models/user');
 const wrapAsync = require('../utils/wrap_async');
 const validateSchemaMiddleware = require('../middleware/validate_schema');
 const userSchema = require('../validation/user_schema');
-const passportAuthenticate = require('../middleware/passport_authenticate');
+const authenticateUser = require('../middleware/authenticate_user');
+
+routes.get('/', (req, res) => {
+  res.render('home');
+});
 
 routes.get('/register', (req, res) => {
   res.render('auth/register');
@@ -35,11 +39,17 @@ routes.get('/login', (req, res) => {
 
 routes.post(
   '/login',
-  passportAuthenticate,
+  authenticateUser,
   wrapAsync(async (req, res) => {
-    req.flash('success', `Bem vindo de volta, fulano`);
-    res.redirect('/hotels');
+    req.flash('success', `Bem vindo de volta, ${req.user.firstName}!`);
+    res.redirect('/');
   })
 );
+
+routes.get('/logout', (req, res) => {
+  req.logout();
+  req.flash('success', 'Sessão encerrada com sucesso');
+  res.redirect('/');
+});
 
 module.exports = routes;
