@@ -9,32 +9,36 @@ factory.define(
   'User',
   User,
   {
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    email: faker.internet.email(),
-    password: faker.internet.password(),
+    firstName: factory.chance('first'),
+    lastName: factory.chance('last'),
+    email: factory.chance('email'),
+    password: factory.chance('word'),
   },
   {
     afterBuild: (model, attrs) => {
-      const password = attrs.password ?? faker.internet.password();
+      const password = attrs.password ?? '123';
       return model.setPassword(password);
     },
   }
 );
 
 factory.define('Review', Review, {
-  rating: Math.floor(Math.random() * 6),
-  text: faker.lorem.paragraph(),
+  rating: factory.chance('integer', { min: 0, max: 5 }),
+  text: factory.chance('paragraph'),
 });
 
 factory.define('Hotel', Hotel, (buildOptions) => {
   let attrs = {
-    name: `Hotel ${faker.company.companyName()}`,
-    image: faker.image.imageUrl(),
-    price: faker.commerce.price(),
-    description: faker.company.catchPhrase(),
-    location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
+    name: factory.chance('company'),
+    image: factory.chance('url', { extensions: ['gif', 'jpg', 'png'] }),
+    price: factory.chance('floating', { min: 0, max: 10000, fixed: 2 }),
+    description: factory.chance('paragraph'),
+    location: factory.chance('city'),
   };
+
+  if (buildOptions.associateUser) {
+    attrs.user = factory.assoc('User');
+  }
 
   if (buildOptions.associateReviews) {
     attrs.reviews = factory.assocMany('Review', 3);

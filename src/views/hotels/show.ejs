@@ -12,14 +12,17 @@
             </section>
             <section class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= hotel.location %></li>
+                <li class="list-group-item">Enviado por <%= hotel.user.fullName %></li>
                 <li class="list-group-item"> R$<%= hotel.price.toFixed(2) %> por noite</li>
             </section>
+            <% if(sessionUser && hotel.user.equals(sessionUser._id)){ %>
             <section class="card-body">
                 <a class="btn btn-info" href="/hotels/<%= hotel._id %>/edit">Editar</a>
                 <form class="d-inline" action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Excluir</button>
                 </form>
             </section>
+            <% } %>
         </main>
     </div>
     <div class="col-6">

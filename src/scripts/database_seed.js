@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const faker = require('faker');
-const Hotel = require('../../models/hotel');
+const Hotel = require('../models/hotel');
+const User = require('../models/user');
 
 const connectionUri = process.env.DATABASE_CONNECTION_URI;
 console.log(`Connecting to ${connectionUri}`);
@@ -22,6 +23,15 @@ db.once('open', () => {
 
 const seedDB = async () => {
   await Hotel.deleteMany({});
+  await User.deleteMany({});
+
+  const user = new User({
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+  });
+  user.setPassword(faker.internet.password());
+  user.save();
 
   for (let i = 0; i < 10; i++) {
     const hotel = new Hotel({
@@ -30,6 +40,7 @@ const seedDB = async () => {
       price: faker.commerce.price(),
       description: faker.company.catchPhrase(),
       location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
+      user: user._id,
     });
     await hotel.save();
   }

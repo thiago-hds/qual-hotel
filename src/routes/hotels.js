@@ -24,6 +24,7 @@ routes.post(
   validateSchemaMiddleware(hotelSchema),
   wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
+    hotel.user = req.user._id;
     await hotel.save();
     req.flash('success', 'Hotel criado com sucesso');
     res.redirect(`/hotels/${hotel._id}`);
@@ -33,7 +34,9 @@ routes.post(
 routes.get(
   '/:id',
   wrapAsync(async (req, res) => {
-    const hotel = await Hotel.findById(req.params.id).populate('reviews');
+    const hotel = await Hotel.findById(req.params.id)
+      .populate('reviews')
+      .populate({ path: 'user', select: 'firstName lastName' });
     if (!hotel) {
       throw new AppError(404, ' Hotel not found');
     }

@@ -8,6 +8,9 @@ const userSchema = new Schema({
   firstName: String,
   lastName: String,
 });
+userSchema.virtual('fullName').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
 userSchema.plugin(passportLocalMongoose, passportSettings);
 
 module.exports = mongoose.model('User', userSchema);
