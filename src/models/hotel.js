@@ -8,6 +8,10 @@ const HotelSchema = new Schema({
   price: Number,
   description: String,
   location: String,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
   reviews: [
     {
       type: Schema.Types.ObjectId,
