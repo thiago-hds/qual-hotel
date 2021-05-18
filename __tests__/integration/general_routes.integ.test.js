@@ -4,7 +4,7 @@ const app = require('../../src/app');
 const request = supertest(app);
 
 describe('General Routes', () => {
-  it('should return 404 error for a invalid route', async () => {
+  it('should return status 404 (not found) for a invalid route', async () => {
     // Act
     const res = await request.get('/invalid');
 

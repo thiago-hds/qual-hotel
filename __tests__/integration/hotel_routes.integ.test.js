@@ -18,7 +18,7 @@ describe('Hotel', () => {
         .post('/login')
         .type('form')
         .send({ email: loggedInUser.email, password })
-        .expect(302)
+        .expect(303)
         .expect('location', '/');
     });
 
@@ -34,7 +34,7 @@ describe('Hotel', () => {
     });
 
     describe('POST /hotels', () => {
-      it('should return status 302 (found) and redirect to /hotels when the request data is valid', async () => {
+      it('should return status 303 (see other) and redirect to /hotels when the request data is valid', async () => {
         // Arrange
         const validHotelData = await factory.attrs('Hotel');
         const requestBody = { hotel: validHotelData };
@@ -46,7 +46,7 @@ describe('Hotel', () => {
         });
 
         // Assert
-        expect(res.status).toBe(302);
+        expect(res.status).toBe(303);
         expect(res.redirect).toBe(true);
         expect(res.headers['location']).toMatch('/hotels');
         expect(newHotelExists).toBe(true);
@@ -108,7 +108,7 @@ describe('Hotel', () => {
         expect(res.headers['location']).toMatch('/hotels');
       });
 
-      it("should not render edit hotel page when the hotel id doesn't exist", async () => {
+      it("should return status 404 (not found) when the hotel id doesn't exist", async () => {
         // Arrange
         const unsavedHotel = await factory.build('Hotel');
 
@@ -121,7 +121,7 @@ describe('Hotel', () => {
     });
 
     describe('PUT /hotels/{id}', () => {
-      it('should update a hotel when the request data is valid', async () => {
+      it('should return status 303 (see other) and redirect to /hotels when the request data is valid', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel', {
           associateUser: true,
@@ -139,11 +139,12 @@ describe('Hotel', () => {
         });
 
         // Assert
-        expect(res.redirect).toBe(true);
         expect(updatedHotelExists).toBe(true);
+        expect(res.status).toBe(303);
+        expect(res.headers['location']).toMatch('/hotels');
       });
 
-      it('should not update a hotel when the request data is invalid', async () => {
+      it('should return status 400 (bad request) when the request data is invalid', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel', {
           associateUser: true,
@@ -170,7 +171,7 @@ describe('Hotel', () => {
     });
 
     describe('DELETE /hotels/{id}', () => {
-      it('should delete a hotel', async () => {
+      it('should return status 302 (found) and redirect to /hotels when hotel is deleted', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
@@ -211,7 +212,7 @@ describe('Hotel', () => {
     const request = supertest(app);
 
     describe('GET /hotels', () => {
-      it('should render hotel index page', async () => {
+      it('should return status 200', async () => {
         // Act
         const res = await request.get('/hotels');
 
@@ -222,7 +223,7 @@ describe('Hotel', () => {
     });
 
     describe('GET /hotels/{id}', () => {
-      it('should render show page when the hotel id exists', async () => {
+      it('should return status 200 (ok) when the hotel id exists', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
@@ -239,7 +240,7 @@ describe('Hotel', () => {
         expect(res.text).toMatch(new RegExp(hotel.name));
       });
 
-      it("should return status 404 when the hotel id doesn't exist", async () => {
+      it("should return status 404 (not found) when the hotel id doesn't exist", async () => {
         // Arrange
         const unsavedHotel = await factory.build('Hotel');
 
@@ -252,7 +253,7 @@ describe('Hotel', () => {
     });
 
     describe('GET /hotels/new', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Act
         const res = await request.get('/hotels/new');
 
@@ -264,7 +265,7 @@ describe('Hotel', () => {
     });
 
     describe('POST /hotels', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const validHotelData = await factory.attrs('Hotel');
         const requestBody = { hotel: validHotelData };
@@ -285,7 +286,7 @@ describe('Hotel', () => {
       });
     });
     describe('GET /hotels/{id}/edit', () => {
-      it('should redirect to /login when user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when user is unauthenticated', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
@@ -304,7 +305,7 @@ describe('Hotel', () => {
     });
 
     describe('PUT /hotels/{id}', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel', {
           associateUser: true,
@@ -329,7 +330,7 @@ describe('Hotel', () => {
       });
     });
     describe('DELETE /hotels/{id}', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',

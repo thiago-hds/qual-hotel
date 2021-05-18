@@ -18,12 +18,12 @@ describe('Hotel Review', () => {
         .post('/login')
         .type('form')
         .send({ email: authUser.email, password })
-        .expect(302)
+        .expect(303)
         .expect('location', '/');
     });
 
     describe('POST /hotels/{id}/reviews', () => {
-      it('should store a new hotel review when the request data is valid', async () => {
+      it('should return status 303 (see other) and redirect  when the request data is valid', async () => {
         // Arrange
         const newHotel = await factory.create('Hotel');
         const reviewData = await factory.attrs('Review');
@@ -38,13 +38,13 @@ describe('Hotel Review', () => {
         const review = await Review.findOne(reviewData);
 
         // Assert
-        expect(res.status).toBe(302);
+        expect(res.status).toBe(303);
         expect(res.redirect).toBe(true);
         expect(review).toBeDefined();
         expect(foundHotel.reviews).toContainEqual(review._id);
       });
 
-      it('should not store a new hotel review when the request data is invalid', async () => {
+      it('should return status 400 (bad request) when the request data is invalid', async () => {
         // Arrange
         const hotel = await factory.create('Hotel');
         const reviewData = await factory.attrs('Review', {
@@ -67,7 +67,7 @@ describe('Hotel Review', () => {
     });
 
     describe('DELETE /hotels/{id}/reviews/{review_id}', () => {
-      it('should delete a review', async () => {
+      it('should return status 302 (found) and redirect to /hotels when delete a review', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
@@ -93,7 +93,7 @@ describe('Hotel Review', () => {
   describe('Unauthenticated User', () => {
     const request = supertest(app);
     describe('POST /hotels/{id}/reviews', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const newHotel = await factory.create('Hotel');
         const reviewData = await factory.attrs('Review');
@@ -114,7 +114,7 @@ describe('Hotel Review', () => {
       });
     });
     describe('DELETE /hotels/{id}/reviews/{review_id}', () => {
-      it('should redirect to /login when the user is unauthenticated', async () => {
+      it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
