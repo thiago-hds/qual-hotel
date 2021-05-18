@@ -27,7 +27,7 @@ routes.post(
     hotel.user = req.user._id;
     await hotel.save();
     req.flash('success', 'Hotel criado com sucesso');
-    res.redirect(`/hotels/${hotel._id}`);
+    res.redirect(303, `/hotels/${hotel._id}`);
   })
 );
 
@@ -64,7 +64,7 @@ routes.put(
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);
     req.flash('success', 'Hotel editado com sucesso');
-    res.redirect(`/hotels/${id}`);
+    res.redirect(303, `/hotels/${id}`);
   })
 );
 

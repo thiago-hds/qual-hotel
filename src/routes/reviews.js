@@ -24,7 +24,7 @@ routes.post(
     await review.save();
     await hotel.save();
     req.flash('success', 'Avaliação incluída com sucesso');
-    res.redirect(`/hotels/${id}`);
+    res.redirect(303, `/hotels/${id}`);
   })
 );
 

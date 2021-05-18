@@ -26,11 +26,11 @@ routes.post(
       req.login(registeredUser, (err) => {
         if (err) return next(err);
         req.flash('success', `Olá ${user.firstName}!`);
-        res.redirect('/');
+        res.redirect(303, '/');
       });
     } catch (err) {
       req.flash('error', err.message);
-      res.redirect(400, '/register');
+      res.status(400).render('auth/register');
     }
   })
 );
@@ -47,7 +47,7 @@ routes.post(
     delete req.session.returnTo;
 
     req.flash('success', `Bem vindo de volta, ${req.user.firstName}!`);
-    res.redirect(redirectUrl);
+    res.redirect(303, redirectUrl);
   })
 );
 
