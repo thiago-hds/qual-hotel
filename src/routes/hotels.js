@@ -2,9 +2,10 @@ const routes = require('express').Router();
 const wrapAsync = require('../utils/wrap_async');
 const Hotel = require('../models/hotel');
 const AppError = require('../utils/app_error');
-const validateSchemaMiddleware = require('../middleware/validate_schema');
 const hotelSchema = require('../validation/hotel_schema');
-const isUserAuthenticated = require('../middleware/is_user_authenticated');
+const { isUserAuthenticated } = require('../middleware/authentication');
+const { isUserHotelCreator } = require('../middleware/authorization');
+const { validateSchema } = require('../middleware/validation');
 
 routes.get(
   '/',
@@ -21,7 +22,7 @@ routes.get('/new', isUserAuthenticated, (req, res) => {
 routes.post(
   '/',
   isUserAuthenticated,
-  validateSchemaMiddleware(hotelSchema),
+  validateSchema(hotelSchema),
   wrapAsync(async (req, res) => {
     const hotel = new Hotel(req.body.hotel);
     hotel.user = req.user._id;
@@ -35,7 +36,10 @@ routes.get(
   '/:id',
   wrapAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id)
-      .populate('reviews')
+      .populate({
+        path: 'reviews',
+        populate: { path: 'user', select: 'firstName lastName' },
+      })
       .populate({ path: 'user', select: 'firstName lastName' });
     if (!hotel) {
       throw new AppError(404, ' Hotel not found');
@@ -47,6 +51,7 @@ routes.get(
 routes.get(
   '/:id/edit',
   isUserAuthenticated,
+  isUserHotelCreator,
   wrapAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
     if (!hotel) {
@@ -59,7 +64,8 @@ routes.get(
 routes.put(
   '/:id',
   isUserAuthenticated,
-  validateSchemaMiddleware(hotelSchema),
+  isUserHotelCreator,
+  validateSchema(hotelSchema),
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndUpdate(id, req.body.hotel);
@@ -71,6 +77,7 @@ routes.put(
 routes.delete(
   '/:id',
   isUserAuthenticated,
+  isUserHotelCreator,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);

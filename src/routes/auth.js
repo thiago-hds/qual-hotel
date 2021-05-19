@@ -3,9 +3,9 @@ const routes = express.Router();
 
 const User = require('../models/user');
 const wrapAsync = require('../utils/wrap_async');
-const validateSchemaMiddleware = require('../middleware/validate_schema');
 const userSchema = require('../validation/user_schema');
-const authenticateUser = require('../middleware/authenticate_user');
+const { validateSchema } = require('../middleware/validation');
+const { authenticateUser } = require('../middleware/authentication');
 
 routes.get('/', (req, res) => {
   res.render('home');
@@ -17,7 +17,7 @@ routes.get('/register', (req, res) => {
 
 routes.post(
   '/register',
-  validateSchemaMiddleware(userSchema),
+  validateSchema(userSchema),
   wrapAsync(async (req, res) => {
     try {
       const { firstName, lastName, email, password } = req.body.user;

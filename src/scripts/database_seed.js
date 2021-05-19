@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const faker = require('faker');
 const Hotel = require('../models/hotel');
 const User = require('../models/user');
+const Review = require('../models/review');
 
 const connectionUri = process.env.DATABASE_CONNECTION_URI;
 console.log(`Connecting to ${connectionUri}`);
@@ -41,7 +42,21 @@ const seedDB = async () => {
       description: faker.company.catchPhrase(),
       location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
       user: user._id,
+      reviews: [],
     });
+
+    for (let j = 0; j < 3; j++) {
+      const review = new Review({
+        text: faker.lorem.sentence(),
+        rating: faker.random.number({
+          min: 0,
+          max: 5,
+        }),
+        user: user._id,
+      });
+      await review.save();
+      hotel.reviews.push(review._id);
+    }
     await hotel.save();
   }
 };

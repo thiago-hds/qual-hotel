@@ -22,28 +22,38 @@ factory.define(
   }
 );
 
-factory.define('Review', Review, {
-  rating: factory.chance('integer', { min: 0, max: 5 }),
-  text: factory.chance('paragraph'),
-});
-
-factory.define('Hotel', Hotel, (buildOptions) => {
+factory.define('Review', Review, ({ associateUser = true }) => {
   let attrs = {
-    name: factory.chance('company'),
-    image: factory.chance('url', { extensions: ['gif', 'jpg', 'png'] }),
-    price: factory.chance('floating', { min: 0, max: 10000, fixed: 2 }),
-    description: factory.chance('paragraph'),
-    location: factory.chance('city'),
+    rating: factory.chance('integer', { min: 0, max: 5 }),
+    text: factory.chance('paragraph'),
   };
 
-  if (buildOptions.associateUser) {
+  if (associateUser) {
     attrs.user = factory.assoc('User');
-  }
-
-  if (buildOptions.associateReviews) {
-    attrs.reviews = factory.assocMany('Review', 3);
   }
   return attrs;
 });
+
+factory.define(
+  'Hotel',
+  Hotel,
+  ({ associateUser = true, associateReviews = false, reviewAttrs = null }) => {
+    let attrs = {
+      name: factory.chance('company'),
+      image: factory.chance('url', { extensions: ['gif', 'jpg', 'png'] }),
+      price: factory.chance('floating', { min: 0, max: 10000, fixed: 2 }),
+      description: factory.chance('paragraph'),
+      location: factory.chance('city'),
+    };
+
+    if (associateUser) {
+      attrs.user = factory.assoc('User');
+    }
+    if (associateReviews) {
+      attrs.reviews = factory.assocMany('Review', 3, '_id', reviewAttrs);
+    }
+    return attrs;
+  }
+);
 
 module.exports = factory;

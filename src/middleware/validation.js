@@ -1,6 +1,6 @@
 const AppError = require('../utils/app_error');
 
-module.exports = function (schema) {
+module.exports.validateSchema = function (schema) {
   return (req, res, next) => {
     const { error } = schema.validate(req.body);
     if (error) {

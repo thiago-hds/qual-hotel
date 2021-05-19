@@ -36,7 +36,11 @@ describe('Hotel', () => {
     describe('POST /hotels', () => {
       it('should return status 303 (see other) and redirect to /hotels when the request data is valid', async () => {
         // Arrange
-        const validHotelData = await factory.attrs('Hotel');
+        const validHotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateUser: false }
+        );
         const requestBody = { hotel: validHotelData };
 
         // Act
@@ -89,13 +93,9 @@ describe('Hotel', () => {
         expect(res.headers['content-type']).toMatch('html');
       });
 
-      it('should return status 302 (found) and redirect to /hotels when trying to edit a hotel created by another user', async () => {
+      it('should return status 302 (found) and redirect to /hotels/{id} when trying to edit a hotel created by another user', async () => {
         // Arrange
-        const hotelCreatedByAnotherUser = await factory.create(
-          'Hotel',
-          {},
-          { associateUser: true }
-        );
+        const hotelCreatedByAnotherUser = await factory.create('Hotel');
 
         // Act
         const res = await agent.get(
@@ -105,7 +105,9 @@ describe('Hotel', () => {
         // Assert
         expect(res.status).toBe(302);
         expect(res.redirect).toBe(true);
-        expect(res.headers['location']).toMatch('/hotels');
+        expect(res.headers['location']).toMatch(
+          `/hotels/${hotelCreatedByAnotherUser._id}`
+        );
       });
 
       it("should return status 404 (not found) when the hotel id doesn't exist", async () => {
@@ -124,9 +126,13 @@ describe('Hotel', () => {
       it('should return status 303 (see other) and redirect to /hotels when the request data is valid', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel', {
-          associateUser: true,
+          user: loggedInUser,
         });
-        const updatedHotelData = await factory.attrs('Hotel');
+        const updatedHotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateUser: false }
+        );
         const requestBody = { hotel: updatedHotelData };
 
         // Act
@@ -139,20 +145,24 @@ describe('Hotel', () => {
         });
 
         // Assert
-        expect(updatedHotelExists).toBe(true);
         expect(res.status).toBe(303);
         expect(res.headers['location']).toMatch('/hotels');
+        expect(updatedHotelExists).toBe(true);
       });
 
       it('should return status 400 (bad request) when the request data is invalid', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel', {
-          associateUser: true,
+          user: loggedInUser,
         });
-        const invalidHotelData = await factory.attrs('Hotel', {
-          description: undefined,
-          price: 'price',
-        });
+        const invalidHotelData = await factory.attrs(
+          'Hotel',
+          {
+            description: undefined,
+            price: 'price',
+          },
+          { associateUser: false }
+        );
         const requestBody = { hotel: invalidHotelData };
 
         // Act
@@ -168,16 +178,40 @@ describe('Hotel', () => {
         expect(res.status).toBe(400);
         expect(updatedHotelExists).toBe(false);
       });
+
+      it('should return status 302 (found) and redirect to /hotels/{id} when trying to update a hotel created by another user', async () => {
+        // Arrange
+        const hotelCreatedByAnotherUser = await factory.create('Hotel');
+        const updatedHotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateUser: false }
+        );
+        const requestBody = { hotel: updatedHotelData };
+
+        // Act
+        const res = await agent
+          .put(`/hotels/${hotelCreatedByAnotherUser._id}`)
+          .type('form')
+          .send(requestBody);
+        const updatedHotelExists = await Hotel.exists({
+          name: updatedHotelData.name,
+        });
+
+        // Assert
+        expect(res.status).toBe(302);
+        expect(res.redirect).toBe(true);
+        expect(res.headers['location']).toMatch(
+          `/hotels/${hotelCreatedByAnotherUser._id}`
+        );
+        expect(updatedHotelExists).toBe(false);
+      });
     });
 
     describe('DELETE /hotels/{id}', () => {
       it('should return status 302 (found) and redirect to /hotels when hotel is deleted', async () => {
         // Arrange
-        const hotel = await factory.create(
-          'Hotel',
-          {},
-          { associateUser: true }
-        );
+        const hotel = await factory.create('Hotel', { user: loggedInUser });
 
         // Act
         const res = await agent.delete(`/hotels/${hotel._id}`);
@@ -194,7 +228,7 @@ describe('Hotel', () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
-          {},
+          { user: loggedInUser },
           { associateReviews: true }
         );
 
@@ -204,6 +238,27 @@ describe('Hotel', () => {
 
         // Assert
         expect(reviewExists).toBe(false);
+      });
+
+      it('should return status 302 (found) and redirect to /hotels/{id} when trying to delete a hotel created by another user', async () => {
+        // Arrange
+        const hotelCreatedByAnotherUser = await factory.create('Hotel');
+
+        // Act
+        const res = await agent.delete(
+          `/hotels/${hotelCreatedByAnotherUser._id}`
+        );
+        const hotelExists = await Hotel.exists({
+          _id: hotelCreatedByAnotherUser._id,
+        });
+
+        // Assert
+        expect(res.status).toBe(302);
+        expect(res.redirect).toBe(true);
+        expect(res.headers['location']).toMatch(
+          `/hotels/${hotelCreatedByAnotherUser._id}`
+        );
+        expect(hotelExists).toBe(true);
       });
     });
   });
@@ -225,11 +280,7 @@ describe('Hotel', () => {
     describe('GET /hotels/{id}', () => {
       it('should return status 200 (ok) when the hotel id exists', async () => {
         // Arrange
-        const hotel = await factory.create(
-          'Hotel',
-          {},
-          { associateUser: true }
-        );
+        const hotel = await factory.create('Hotel');
 
         // Act
         const res = await request.get(`/hotels/${hotel._id}`);
@@ -288,11 +339,7 @@ describe('Hotel', () => {
     describe('GET /hotels/{id}/edit', () => {
       it('should return status 302 (found) and redirect to /login when user is unauthenticated', async () => {
         // Arrange
-        const hotel = await factory.create(
-          'Hotel',
-          {},
-          { associateUser: true }
-        );
+        const hotel = await factory.create('Hotel');
 
         // Act
         const res = await request.get(`/hotels/${hotel._id}/edit`);
@@ -307,9 +354,7 @@ describe('Hotel', () => {
     describe('PUT /hotels/{id}', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
-        const existentHotel = await factory.create('Hotel', {
-          associateUser: true,
-        });
+        const existentHotel = await factory.create('Hotel');
         const updatedHotelData = await factory.attrs('Hotel');
         const requestBody = { hotel: updatedHotelData };
 
@@ -332,11 +377,7 @@ describe('Hotel', () => {
     describe('DELETE /hotels/{id}', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
-        const hotel = await factory.create(
-          'Hotel',
-          {},
-          { associateUser: true }
-        );
+        const hotel = await factory.create('Hotel');
 
         // Act
         const res = await request.delete(`/hotels/${hotel._id}`);

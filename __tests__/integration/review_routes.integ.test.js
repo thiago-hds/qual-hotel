@@ -8,16 +8,16 @@ const Review = require('../../src/models/review');
 describe('Hotel Review', () => {
   describe('Authenticated User', () => {
     const agent = supertest.agent(app);
-    let authUser = null;
+    let loggedInUser = null;
 
     beforeEach(async () => {
       const password = faker.internet.password();
-      authUser = await factory.create('User', { password });
+      loggedInUser = await factory.create('User', { password });
 
       await agent
         .post('/login')
         .type('form')
-        .send({ email: authUser.email, password })
+        .send({ email: loggedInUser.email, password })
         .expect(303)
         .expect('location', '/');
     });
@@ -26,7 +26,13 @@ describe('Hotel Review', () => {
       it('should return status 303 (see other) and redirect  when the request data is valid', async () => {
         // Arrange
         const newHotel = await factory.create('Hotel');
-        const reviewData = await factory.attrs('Review');
+        const reviewData = await factory.attrs(
+          'Review',
+          {},
+          {
+            associateUser: false,
+          }
+        );
         const requestBody = { review: reviewData };
 
         // Act
@@ -67,7 +73,29 @@ describe('Hotel Review', () => {
     });
 
     describe('DELETE /hotels/{id}/reviews/{review_id}', () => {
-      it('should return status 302 (found) and redirect to /hotels when delete a review', async () => {
+      it('should return status 302 (found) and redirect to /hotels/{id} when delete a review that user owns', async () => {
+        // Arrange
+        const hotel = await factory.create(
+          'Hotel',
+          {},
+          { associateReviews: true, reviewAttrs: { user: loggedInUser } }
+        );
+        const review = hotel.reviews[0];
+
+        // Act
+        const res = await agent.delete(
+          `/hotels/${hotel._id}/reviews/${review._id}`
+        );
+        const reviewExists = await Review.exists({ _id: review._id });
+
+        // Assert
+        expect(res.status).toBe(302);
+        expect(res.redirect).toBe(true);
+        expect(res.headers['location']).toMatch(`/hotels/${hotel._id}`);
+        expect(reviewExists).toBe(false);
+      });
+
+      it('should return status 302 (found) and redirect to /hotels/{id} when delete a review created by another user', async () => {
         // Arrange
         const hotel = await factory.create(
           'Hotel',
@@ -85,13 +113,15 @@ describe('Hotel Review', () => {
         // Assert
         expect(res.status).toBe(302);
         expect(res.redirect).toBe(true);
-        expect(reviewExists).toBe(false);
+        expect(res.headers['location']).toMatch(`/hotels/${hotel._id}`);
+        expect(reviewExists).toBe(true);
       });
     });
   });
 
   describe('Unauthenticated User', () => {
     const request = supertest(app);
+
     describe('POST /hotels/{id}/reviews', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
@@ -113,6 +143,7 @@ describe('Hotel Review', () => {
         expect(res.headers['location']).toMatch('/login');
       });
     });
+
     describe('DELETE /hotels/{id}/reviews/{review_id}', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange

@@ -26,6 +26,7 @@
         </main>
     </div>
     <div class="col-6">
+        <% if(sessionUser){ %>
         <form class="mb-3 validated-form" action="/hotels/<%= hotel._id %>/reviews" method="POST" novalidate>
             <h2>Avalie esse hotel</h2>
             <div class="mb-3">
@@ -39,14 +40,19 @@
             </div>
             <button class="btn btn-success">Enviar</button>
         </form>
+        <% } %>
+        <h2>Avaliações</h2>
         <% for(let review of hotel.reviews) { %>
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title"> <%= review.rating %> / 5 </h5>
+                <h6 class="card-subtitle mb-2 text-muted">por <%= review.user?.fullName %></h6>
                 <p class="card-text"> <%= review.text %> </p>
+                <% if(sessionUser && review.user?.equals(sessionUser._id)){ %>
                 <form action="/hotels/<%= hotel.id %>/reviews/<%= review.id%>?_method=DELETE" method="POST">
                     <button class="btn btn-sm btn-danger">Excluir</button>
                 </form>
+                <% } %>
             </div>
         </div>
         <% } %>
