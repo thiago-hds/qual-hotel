@@ -12,9 +12,9 @@ const flash = require('connect-flash');
 const passport = require('passport');
 
 const User = require('./models/user');
-const authRoutes = require('./routes/auth');
-const hotelsRoutes = require('./routes/hotels');
-const reviewsRoutes = require('./routes/reviews');
+const authRoutes = require('./routes/auth_routes');
+const hotelsRoutes = require('./routes/hotel_routes');
+const reviewsRoutes = require('./routes/review_routes');
 
 const databaseHelper = require('./utils/database');
 const errorHandlerMiddleware = require('./middleware/error_handler');

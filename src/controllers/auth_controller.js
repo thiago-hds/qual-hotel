@@ -1,15 +1,16 @@
-const User = require('../models/user');
+const AuthService = require('../services/auth_service');
+
+const authService = new AuthService();
 
 module.exports.renderRegisterPage = (req, res) => {
   res.render('auth/register');
 };
 
-module.exports.register = async (req, res) => {
+module.exports.register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body.user;
-    const user = new User({ firstName, lastName, email });
-    const registeredUser = await User.register(user, password);
-    req.login(registeredUser, (err) => {
+    const user = await authService.register(req.body.user);
+
+    req.login(user, (err) => {
       if (err) return next(err);
       req.flash('success', `Olá ${user.firstName}!`);
       res.redirect(303, '/');

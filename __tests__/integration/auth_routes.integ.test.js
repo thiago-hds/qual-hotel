@@ -32,10 +32,10 @@ describe('Authentication', () => {
         email: requestBody.user.email,
       });
       // Assert
-      expect(newUserExists).toBe(true);
       expect(res.status).toBe(303);
       expect(res.redirect).toBe(true);
       expect(res.headers['location']).toMatch('/');
+      expect(newUserExists).toBe(true);
     });
 
     it('should return status 400 (bad request) when the request data is invalid', async () => {
