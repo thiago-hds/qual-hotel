@@ -6,9 +6,7 @@
             <img src="<%= hotel.image %>" class="card-img-top" alt="...">
             <section class="card-body">
                 <h5 class="card-title"><%= hotel.name %></h5>
-                <p class="card-text">
-                    <%= hotel.description %>
-                </p>
+                <p class="card-text"><%= hotel.description %></p>
             </section>
             <section class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= hotel.location %></li>
@@ -31,7 +29,20 @@
             <h2>Avalie esse hotel</h2>
             <div class="mb-3">
                 <label class="form-label" for="rating">Nota</label>
-                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+                <fieldset class="starability-grow">
+                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked
+                        aria-label="No rating." />
+                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                    <label for="first-rate1" title="Péssimo">1 estrela</label>
+                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                    <label for="first-rate2" title="Ruim">2 estrelas</label>
+                    <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                    <label for="first-rate3" title="Mediano">3 estrelas</label>
+                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                    <label for="first-rate4" title="Muito Bom">4 estrelas</label>
+                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                    <label for="first-rate5" title="Incrível">5 estrelas</label>
+                </fieldset>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="text">Texto</label>
@@ -45,8 +56,14 @@
         <% for(let review of hotel.reviews) { %>
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title"> <%= review.rating %> / 5 </h5>
-                <h6 class="card-subtitle mb-2 text-muted">por <%= review.user?.fullName %></h6>
+                <h5 class="card-title"> <%= review.user?.fullName %></h5>
+
+                <h6 class="card-subtitle mb-2 ">
+                    <p class="starability-result" data-rating="<%= review.rating %>">
+                        Nota: <%= review.rating %> estrelas
+                    </p>
+                </h6>
+
                 <p class="card-text"> <%= review.text %> </p>
                 <% if(sessionUser && review.user?.equals(sessionUser._id)){ %>
                 <form action="/hotels/<%= hotel.id %>/reviews/<%= review.id%>?_method=DELETE" method="POST">
