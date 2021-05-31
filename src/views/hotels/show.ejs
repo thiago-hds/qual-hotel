@@ -3,7 +3,29 @@
 <div class="row">
     <div class="col-6">
         <main class="card mb-3">
-            <img src="<%= hotel.image %>" class="card-img-top" alt="...">
+            <% if(hotel.images){ %>
+            <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <% hotel.images.forEach((image, index) => { %>
+                    <div class="carousel-item <%= index == 0 ? 'active' : '' %>">
+                        <img src="<%= image.url %> " class="d-block w-100" alt="">
+                    </div>
+                    <% }); %>
+                </div>
+                <% if (hotel.images.length > 1) { %>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselImages"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Pŕoxima</span>
+                </button>
+                <% } %>
+            </div>
+            <% } %>
             <section class="card-body">
                 <h5 class="card-title"><%= hotel.name %></h5>
                 <p class="card-text"><%= hotel.description %></p>

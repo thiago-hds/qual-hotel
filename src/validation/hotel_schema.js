@@ -4,7 +4,7 @@ module.exports = Joi.object({
   hotel: Joi.object({
     name: Joi.string().required(),
     price: Joi.number().required().min(0),
-    image: Joi.string().required(),
+    // images: Joi.required(),
     location: Joi.string().required(),
     description: Joi.string().required(),
   }).required(),

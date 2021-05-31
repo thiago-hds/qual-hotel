@@ -1,6 +1,6 @@
-const hotel = require('../models/hotel');
-const Hotel = require('../models/hotel');
+const { Hotel } = require('../models/hotel');
 const AppError = require('../utils/app_error');
+
 class HotelService {
   async findAll() {
     return await Hotel.find({});
@@ -17,8 +17,8 @@ class HotelService {
 
   async store(hotelData, userAuthorId) {
     const newHotel = new Hotel(hotelData);
-    hotel.user = userAuthorId;
-    await newHotel.save();
+    newHotel.user = userAuthorId;
+    return await newHotel.save();
   }
 
   async update(hotelId, hotelData) {

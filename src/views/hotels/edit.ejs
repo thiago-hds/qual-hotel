@@ -2,10 +2,10 @@
 <h1 class="text-center"> <%= hotel? 'Editar' : 'Novo' %> Hotel</h1>
 <div class="row">
   <div class="col-6 offset-3">
-    <form action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> " method="POST" class="validated-form"
-      novalidate>
+    <form action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> " method="POST" enctype="multipart/form-data"
+      class="validated-form" novalidate>
       <div class="mb-3">
-        <label class="form-label" for="name">Nomes</label>
+        <label class="form-label" for="name">Nome</label>
         <input class="form-control" type="text" id="name" name="hotel[name]" value='<%= hotel?.name %>' required>
         <div class="invalid-feedback">Nome é obrigatório</div>
       </div>
@@ -25,15 +25,19 @@
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label" for="image">Imagem</label>
-        <input class="form-control" type="text" id="image" name="hotel[image]" value='<%= hotel?.image %>' required>
-        <div class="invalid-feedback">Imagem é obrigatório</div>
-      </div>
-      <div class="mb-3">
         <label class="form-label" for="description">Descrição</label>
         <textarea class="form-control" type="text" id="description" name="hotel[description]"
           required><%= hotel?.description %></textarea>
         <div class="invalid-feedback">Descrição é obrigatório</div>
+      </div>
+      <div class="mb-3">
+        <label for="images" class="form-label">Imagens</label>
+        <input class="form-control" type="file" name="images" id="images" multiple required>
+
+        <!-- <input type="file" name="images" id="images" multiple> -->
+        <!-- <label class="form-label" for="image">Imagem</label>
+        <input class="form-control" type="text" id="image" name="hotel[image]" value='<%= hotel?.image %>' required> -->
+        <div class="invalid-feedback">Imagem é obrigatório</div>
       </div>
       <div class="mb-3">
         <a class="btn btn-danger" href="/hotels">Cancelar</a>

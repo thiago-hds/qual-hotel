@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
-const passportSettings = require('../settings/passport_settings');
+const passportConfig = require('../config/passport_config');
 
 const Schema = mongoose.Schema;
 
@@ -11,6 +11,6 @@ const userSchema = new Schema({
 userSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
-userSchema.plugin(passportLocalMongoose, passportSettings);
+userSchema.plugin(passportLocalMongoose, passportConfig);
 
 module.exports = mongoose.model('User', userSchema);

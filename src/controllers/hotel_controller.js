@@ -13,7 +13,20 @@ module.exports.create = (req, res) => {
 };
 
 module.exports.store = async (req, res) => {
-  const hotel = hotelService.store(req.body.hotel, req.user._id);
+  const { hotel: hotelData } = req.body;
+  const userId = req.user._id;
+  const filesData = req.files;
+
+  if (filesData) {
+    hotelData.images = filesData.map((f) => ({
+      url: f.path,
+      filename: f.filename,
+    }));
+  }
+  console.log(hotelData);
+
+  const hotel = await hotelService.store(hotelData, userId);
+  console.log('created hotel', hotel);
 
   req.flash('success', 'Hotel criado com sucesso');
   res.redirect(303, `/hotels/${hotel._id}`);

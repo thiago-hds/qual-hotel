@@ -37,7 +37,20 @@ const seedDB = async () => {
   for (let i = 0; i < 10; i++) {
     const hotel = new Hotel({
       name: `Hotel ${faker.company.companyName()}`,
-      image: 'https://source.unsplash.com/collection/9273901',
+      images: [
+        {
+          url: faker.image.imageUrl(),
+          filename: faker.lorem.word(),
+        },
+        {
+          url: faker.image.imageUrl(),
+          filename: faker.lorem.word(),
+        },
+        {
+          url: faker.image.imageUrl(),
+          filename: faker.lorem.word(),
+        },
+      ],
       price: faker.commerce.price(),
       description: faker.company.catchPhrase(),
       location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,

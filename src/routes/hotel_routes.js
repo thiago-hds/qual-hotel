@@ -6,17 +6,16 @@ const { isUserAuthenticated } = require('../middleware/authentication');
 const { isUserHotelCreator } = require('../middleware/authorization');
 const { validateSchema } = require('../middleware/validation');
 const hotelController = require('../controllers/hotel_controller');
+const { storage: cloudinaryStorage } = require('../libs/cloudinary');
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: cloudinaryStorage });
 
 router
   .route('/')
   .get(wrapAsync(hotelController.index))
-  // .post(upload.array('images'), (req, res) => {
-  //   console.log(req.body, req.files);
-  // });
   .post(
     isUserAuthenticated,
+    upload.array('images'),
     validateSchema(hotelSchema),
     wrapAsync(hotelController.store)
   );
