@@ -1,4 +1,4 @@
-const { Hotel } = require('../models/hotel');
+const Hotel = require('../models/hotel');
 const AppError = require('../utils/app_error');
 
 class HotelService {

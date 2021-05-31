@@ -39,7 +39,7 @@ describe('Hotel', () => {
         const validHotelData = await factory.attrs(
           'Hotel',
           {},
-          { associateUser: false }
+          { associateUser: false, associateImages: false }
         );
         const requestBody = { hotel: validHotelData };
 
@@ -56,12 +56,49 @@ describe('Hotel', () => {
         expect(newHotelExists).toBe(true);
       });
 
+      it('should return status 303 (see other) and redirect to /hotels when the request data is valid and uploading images', async () => {
+        // Arrange
+        const hotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateUser: false, associateImages: false }
+        );
+
+        // Act
+        const res = await agent
+          .post('/hotels')
+          .type('form')
+          .field('hotel[name]', hotelData.name)
+          .field('hotel[price]', hotelData.price)
+          .field('hotel[description]', hotelData.description)
+          .field('hotel[location]', hotelData.location)
+          .attach('images', '__tests__/fixtures/hotel.jpg')
+          .attach('images', '__tests__/fixtures/hotel2.jpg')
+          .on('error', (err) => {
+            // console.log(err);
+          });
+        const newHotel = await Hotel.findOne({
+          name: hotelData.name,
+        });
+
+        // Assert
+        expect(res.status).toBe(303);
+        expect(res.redirect).toBe(true);
+        expect(res.headers['location']).toMatch('/hotels');
+        expect(newHotel).toBeDefined();
+        expect(newHotel.images.length).toBe(2);
+      });
+
       it('should return status 400 (bad request) when the request data is invalid', async () => {
         // Arrange
-        const invalidHotelData = await factory.attrs('Hotel', {
-          description: undefined,
-          price: 'price',
-        });
+        const invalidHotelData = await factory.attrs(
+          'Hotel',
+          {
+            description: undefined,
+            price: 'price',
+          },
+          { associateImages: false }
+        );
         const requestBody = { hotel: invalidHotelData };
 
         // Act
@@ -131,7 +168,7 @@ describe('Hotel', () => {
         const updatedHotelData = await factory.attrs(
           'Hotel',
           {},
-          { associateUser: false }
+          { associateUser: false, associateImages: false }
         );
         const requestBody = { hotel: updatedHotelData };
 
@@ -161,7 +198,7 @@ describe('Hotel', () => {
             description: undefined,
             price: 'price',
           },
-          { associateUser: false }
+          { associateUser: false, associateImages: false }
         );
         const requestBody = { hotel: invalidHotelData };
 
@@ -185,7 +222,7 @@ describe('Hotel', () => {
         const updatedHotelData = await factory.attrs(
           'Hotel',
           {},
-          { associateUser: false }
+          { associateUser: false, associateImages: false }
         );
         const requestBody = { hotel: updatedHotelData };
 
@@ -318,7 +355,11 @@ describe('Hotel', () => {
     describe('POST /hotels', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
-        const validHotelData = await factory.attrs('Hotel');
+        const validHotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateImages: false }
+        );
         const requestBody = { hotel: validHotelData };
 
         // Act
@@ -355,7 +396,11 @@ describe('Hotel', () => {
       it('should return status 302 (found) and redirect to /login when the user is unauthenticated', async () => {
         // Arrange
         const existentHotel = await factory.create('Hotel');
-        const updatedHotelData = await factory.attrs('Hotel');
+        const updatedHotelData = await factory.attrs(
+          'Hotel',
+          {},
+          { associateImages: false }
+        );
         const requestBody = { hotel: updatedHotelData };
 
         // Act

@@ -37,10 +37,14 @@ factory.define('Review', Review, ({ associateUser = true }) => {
 factory.define(
   'Hotel',
   Hotel,
-  ({ associateUser = true, associateReviews = false, reviewAttrs = null }) => {
+  ({
+    associateUser = true,
+    associateReviews = false,
+    associateImages = true,
+    reviewAttrs = null,
+  }) => {
     let attrs = {
       name: factory.chance('company'),
-      image: factory.chance('url', { extensions: ['gif', 'jpg', 'png'] }),
       price: factory.chance('floating', { min: 0, max: 10000, fixed: 2 }),
       description: factory.chance('paragraph'),
       location: factory.chance('city'),
@@ -51,6 +55,14 @@ factory.define(
     }
     if (associateReviews) {
       attrs.reviews = factory.assocMany('Review', 3, '_id', reviewAttrs);
+    }
+    if (associateImages) {
+      attrs.images = [
+        {
+          url: factory.chance('url', { extensions: ['gif', 'jpg', 'png'] }),
+          filename: factory.chance('word'),
+        },
+      ];
     }
     return attrs;
   }
