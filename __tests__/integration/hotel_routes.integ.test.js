@@ -1,6 +1,6 @@
 const supertest = require('supertest');
 const faker = require('faker');
-const factory = require('../factories');
+const factory = require('../../src/libs/factories');
 const app = require('../../src/app');
 const Hotel = require('../../src/models/hotel');
 const Review = require('../../src/models/review');

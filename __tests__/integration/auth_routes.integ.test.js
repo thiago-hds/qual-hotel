@@ -3,7 +3,7 @@ const faker = require('faker');
 
 const User = require('../../src/models/user');
 const app = require('../../src/app');
-const factory = require('../factories');
+const factory = require('../../src/libs/factories');
 
 const request = supertest(app);
 

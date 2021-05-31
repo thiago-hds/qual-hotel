@@ -1,7 +1,7 @@
 const faker = require('faker');
-const User = require('../src/models/user');
-const Hotel = require('../src/models/hotel');
-const Review = require('../src/models/review');
+const User = require('../models/user');
+const Hotel = require('../models/hotel');
+const Review = require('../models/review');
 
 const { factory } = require('factory-girl');
 
