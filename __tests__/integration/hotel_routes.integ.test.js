@@ -2,8 +2,7 @@ const supertest = require('supertest');
 const faker = require('faker');
 const factory = require('../../src/libs/factories');
 const app = require('../../src/app');
-const Hotel = require('../../src/models/hotel');
-const Review = require('../../src/models/review');
+const { Hotel, Review } = require('../../src/models');
 
 describe('Hotel', () => {
   describe('Authenticated User', () => {
@@ -77,6 +76,7 @@ describe('Hotel', () => {
           .on('error', (err) => {
             // console.log(err);
           });
+
         const newHotel = await Hotel.findOne({
           name: hotelData.name,
         });

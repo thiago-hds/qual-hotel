@@ -1,9 +1,6 @@
 const faker = require('faker');
-const User = require('../models/user');
-const Hotel = require('../models/hotel');
-const Review = require('../models/review');
-
 const { factory } = require('factory-girl');
+const { User, Hotel, Review } = require('../models');
 
 factory.define(
   'User',

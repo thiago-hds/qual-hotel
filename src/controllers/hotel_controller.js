@@ -1,5 +1,5 @@
 const AppError = require('../utils/app_error');
-const HotelService = require('../services/hotel_service');
+const { HotelService } = require('../services');
 
 const hotelService = new HotelService();
 
@@ -23,10 +23,8 @@ module.exports.store = async (req, res) => {
       filename: f.filename,
     }));
   }
-  console.log(hotelData);
 
   const hotel = await hotelService.store(hotelData, userId);
-  console.log('created hotel', hotel);
 
   req.flash('success', 'Hotel criado com sucesso');
   res.redirect(303, `/hotels/${hotel._id}`);

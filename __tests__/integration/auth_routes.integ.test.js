@@ -1,7 +1,7 @@
 const supertest = require('supertest');
 const faker = require('faker');
 
-const User = require('../../src/models/user');
+const { User } = require('../../src/models');
 const app = require('../../src/app');
 const factory = require('../../src/libs/factories');
 

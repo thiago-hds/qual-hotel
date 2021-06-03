@@ -1,4 +1,5 @@
-const User = require('../models/user');
+const { User } = require('../models');
+
 class AuthService {
   async register(userData) {
     const { firstName, lastName, email, password } = userData;

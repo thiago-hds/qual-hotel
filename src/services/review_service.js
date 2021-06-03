@@ -1,4 +1,4 @@
-const Review = require('../models/review');
+const { Review } = require('../models');
 
 class ReviewService {
   async store(reviewData) {

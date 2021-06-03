@@ -1,5 +1,4 @@
-const Hotel = require('../models/hotel');
-const Review = require('../models/review');
+const { Hotel, Review } = require('../models');
 
 module.exports.isUserHotelCreator = async (req, res, next) => {
   const { id } = req.params;

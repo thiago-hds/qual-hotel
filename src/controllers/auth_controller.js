@@ -1,4 +1,4 @@
-const AuthService = require('../services/auth_service');
+const { AuthService } = require('../services');
 
 const authService = new AuthService();
 

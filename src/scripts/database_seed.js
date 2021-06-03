@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const faker = require('faker');
-const Hotel = require('../models/hotel');
-const User = require('../models/user');
-const Review = require('../models/review');
+const { Hotel, User, Review } = require('../models');
 
 const connectionUri = process.env.DATABASE_CONNECTION_URI;
 console.log(`Connecting to ${connectionUri}`);

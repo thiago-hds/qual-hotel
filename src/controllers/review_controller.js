@@ -1,5 +1,4 @@
-const HotelService = require('../services/hotel_service');
-const ReviewService = require('../services/review_service');
+const { HotelService, ReviewService } = require('../services');
 const AppError = require('../utils/app_error');
 
 const hotelService = new HotelService();
