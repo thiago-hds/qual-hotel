@@ -1,5 +1,6 @@
 const AppError = require('../utils/app_error');
 const { HotelService } = require('../services');
+const geocode = require('../utils/geocode');
 
 const hotelService = new HotelService();
 
@@ -17,8 +18,11 @@ module.exports.store = async (req, res) => {
   const userId = req.user._id;
   const filesData = req.files;
 
+  const location = await geocode(hotelData.address);
+  hotelData.location = location[0].geometry;
+
   if (filesData) {
-    hotelData.images = filesData.map((f) => ({
+    hotelData.images = filesData.map(f => ({
       url: f.path,
       filename: f.filename,
     }));

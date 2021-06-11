@@ -1,38 +1,78 @@
 <% layout('layouts/boilerplate') %>
-<h1 class="text-center"> <%= hotel? 'Editar' : 'Novo' %> Hotel</h1>
+<h1 class="text-center"><%= hotel? 'Editar' : 'Novo' %> Hotel</h1>
 <div class="row">
   <div class="col-6 offset-3">
-    <form action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> " method="POST" enctype="multipart/form-data"
-      class="validated-form" novalidate>
+    <form
+      action="/hotels/<%= hotel? `${hotel._id}?_method=PUT` : '' %> "
+      method="POST"
+      enctype="multipart/form-data"
+      class="validated-form"
+      novalidate
+    >
       <div class="mb-3">
         <label class="form-label" for="name">Nome</label>
-        <input class="form-control" type="text" id="name" name="hotel[name]" value='<%= hotel?.name %>' required>
+        <input
+          class="form-control"
+          type="text"
+          id="name"
+          name="hotel[name]"
+          value="<%= hotel?.name %>"
+          required
+        />
         <div class="invalid-feedback">Nome é obrigatório</div>
       </div>
       <div class="mb-3">
-        <label class="form-label" for="location">Local</label>
-        <input class="form-control" type="text" id="location" name="hotel[location]" value='<%= hotel?.location %>'
-          required>
+        <label class="form-label" for="address">Local</label>
+        <input
+          class="form-control"
+          type="text"
+          id="address"
+          name="hotel[address]"
+          value="<%= hotel?.address %>"
+          required
+        />
         <div class="invalid-feedback">Local é obrigatório</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="price">Preço</label>
         <div class="input-group">
           <span class="input-group-text" id="price-label">R$</span>
-          <input type="text" class="form-control" id="price" name="hotel[price]" placeholder="0" aria-label="price"
-            aria-describedby="price-label" required>
+          <input
+            type="text"
+            class="form-control"
+            id="price"
+            name="hotel[price]"
+            placeholder="0"
+            aria-label="price"
+            aria-describedby="price-label"
+            required
+          />
           <div class="invalid-feedback">Preço é obrigatório</div>
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="description">Descrição</label>
-        <textarea class="form-control" type="text" id="description" name="hotel[description]"
-          required><%= hotel?.description %></textarea>
+        <textarea
+          class="form-control"
+          type="text"
+          id="description"
+          name="hotel[description]"
+          required
+        >
+<%= hotel?.description %></textarea
+        >
         <div class="invalid-feedback">Descrição é obrigatório</div>
       </div>
       <div class="mb-3">
         <label for="images" class="form-label">Imagens</label>
-        <input class="form-control" type="file" name="images" id="images" multiple required>
+        <input
+          class="form-control"
+          type="file"
+          name="images"
+          id="images"
+          multiple
+          required
+        />
 
         <!-- <input type="file" name="images" id="images" multiple> -->
         <!-- <label class="form-label" for="image">Imagem</label>

@@ -73,7 +73,7 @@ describe('Hotel', () => {
           .field('hotel[location]', hotelData.location)
           .attach('images', '__tests__/fixtures/hotel.jpg')
           .attach('images', '__tests__/fixtures/hotel2.jpg')
-          .on('error', (err) => {
+          .on('error', err => {
             // console.log(err);
           });
 

@@ -2,34 +2,32 @@
 
 <h1>Hotéis</h1>
 <div>
-    <a href="/hotels/new">New Hotel</a>
+  <a href="/hotels/new">Novo Hotel</a>
 </div>
 <ul>
-    <% for(const hotel of hotels){ %>
-    <div class="card mb-3">
-        <div class="row">
-            <div class="col-md-4">
-                <img class="img-fluid"
-                    src="<%= (hotel.images && hotel.images.length) ? hotel.images[0].thumbnail : '' %> ">
-            </div>
-            <div class="col-md-8">
-                <div class="class-body">
-                    <h5 class="class-title"><%= hotel.name %> </h5>
-                    <p class="card-text">
-                        <%= hotel.description %>
-                    </p>
-                    <p class="card-text">
-                        <small class="text-muted"><%=hotel.location %>
-                        </small>
-                    </p>
-                    <a class="btn btn-primary" href="/hotels/<%= hotel._id %> ">
-                        Ver Hotel
-                    </a>
-                    <div></div>
-
-                </div>
-            </div>
+  <% for(const hotel of hotels){ %>
+  <div class="card mb-3">
+    <div class="row">
+      <div class="col-md-4">
+        <img
+          class="img-fluid"
+          src="<%= (hotel.images && hotel.images.length) ? hotel.images[0].thumbnail : '' %> "
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="class-body">
+          <h5 class="class-title"><%= hotel.name %></h5>
+          <p class="card-text"><%= hotel.description %></p>
+          <p class="card-text">
+            <small class="text-muted"><%=hotel.address %> </small>
+          </p>
+          <a class="btn btn-primary" href="/hotels/<%= hotel._id %> ">
+            Ver Hotel
+          </a>
+          <div></div>
         </div>
+      </div>
     </div>
-    <% } %>
+  </div>
+  <% } %>
 </ul>

@@ -10,7 +10,7 @@ module.exports.register = async (req, res, next) => {
   try {
     const user = await authService.register(req.body.user);
 
-    req.login(user, (err) => {
+    req.login(user, err => {
       if (err) return next(err);
       req.flash('success', `Olá ${user.firstName}!`);
       res.redirect(303, '/');

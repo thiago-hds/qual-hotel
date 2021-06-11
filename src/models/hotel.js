@@ -15,7 +15,18 @@ const HotelSchema = new Schema({
   images: [ImageSchema],
   price: Number,
   description: String,
-  location: String,
+  address: String,
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',

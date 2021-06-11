@@ -10,10 +10,10 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .catch((error) => console.error(error));
+  .catch(error => console.error(error));
 
 const db = mongoose.connection;
-db.on('error', (error) => console.error(error));
+db.on('error', error => console.error(error));
 db.once('open', () => {
   console.log('Database connected');
 });
@@ -37,21 +37,25 @@ const seedDB = async () => {
       name: `Hotel ${faker.company.companyName()}`,
       images: [
         {
-          url: faker.image.imageUrl(),
+          url:
+            'https://res.cloudinary.com/dxhlfgnss/image/upload/v1622918767/qual-hotel/abyprobr18o0glviwfew.jpg',
           filename: faker.lorem.word(),
         },
         {
-          url: faker.image.imageUrl(),
+          url:
+            'https://res.cloudinary.com/dxhlfgnss/image/upload/v1622733531/qual-hotel/hmguupgd5brlumq0lo8d.jpg',
           filename: faker.lorem.word(),
         },
         {
-          url: faker.image.imageUrl(),
+          url:
+            'https://res.cloudinary.com/dxhlfgnss/image/upload/v1621857254/qual-hotel/rkyz9r3akyvvr38htmil.jpg',
           filename: faker.lorem.word(),
         },
       ],
       price: faker.commerce.price(),
       description: faker.company.catchPhrase(),
-      location: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
+      address: `${faker.address.city()} - ${faker.address.stateAbbr()}`,
+      location: { coordinates: [-43.944119, -19.97534], type: 'Point' },
       user: user._id,
       reviews: [],
     });
@@ -76,6 +80,6 @@ seedDB()
     console.log('Database seeded, closing connection');
     db.close();
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err);
   });

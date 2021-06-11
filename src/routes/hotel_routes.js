@@ -7,8 +7,19 @@ const { isUserHotelCreator } = require('../middleware/authorization');
 const { validateSchema } = require('../middleware/validation');
 const hotelController = require('../controllers/hotel_controller');
 const { storage: cloudinaryStorage } = require('../libs/cloudinary');
+const geocode = require('../utils/geocode');
 
 const upload = multer({ storage: cloudinaryStorage });
+
+// teste
+router.route('/geo').get(
+  wrapAsync(async (req, res) => {
+    const geoData = await geocode(
+      'Avenida Augusto de Lima, 479 Belo Horizonte MG'
+    );
+    res.send(geoData);
+  })
+);
 
 router
   .route('/')
