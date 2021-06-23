@@ -11,16 +11,28 @@ ImageSchema.virtual('thumbnail').get(function () {
 });
 
 const HotelSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   images: [ImageSchema],
-  price: Number,
-  description: String,
-  address: String,
+  price: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
   location: {
     type: {
       type: String,
       enum: ['Point'],
-      required: true,
     },
     coordinates: {
       type: [Number],
