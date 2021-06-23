@@ -117,3 +117,4 @@ dist
 
 globalConfig.json
 uploads/
+.vscode/settings.json

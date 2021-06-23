@@ -10,6 +10,8 @@ const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const { User } = require('./models');
 const { authRoutes, hotelsRoutes, reviewsRoutes } = require('./routes');
@@ -46,14 +48,18 @@ class AppController {
     this.app.use(express.static(path.join(__dirname, '..', 'public')));
     // this.app.use(cookieParser());
 
+    /* sanitize */
+    this.app.use(mongoSanitize());
+
     /* session */
     // TODO put it on a config folder
     const sessionConfig = {
+      name: 'session',
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: true,
       cookie: {
-        httpOnly: true,
+        httpOnly: true, // cookies não visíveis via javascript
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     };
@@ -78,6 +84,9 @@ class AppController {
       next();
     });
 
+    this.app.use(helmet({ contentSecurityPolicy: false }));
+
+    /* morgan */
     if (process.env.NODE_ENV !== 'test') {
       this.app.use(morgan('tiny'));
     }
